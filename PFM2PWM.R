@@ -15,7 +15,6 @@
 #'  Position Weight Matrix (PWM) for a motif. Each PWM contains log2-transformed
 #'  weights relative to the background probabilities.
 #' @export
-
 PFM2PWM <- function(PFMs, background = c(0.25, 0.25, 0.25, 0.25)) {
   PWMs <- list()
   for (name in names(PFMs)) {
