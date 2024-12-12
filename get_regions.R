@@ -1,7 +1,7 @@
 #' Get Region Coordinates Based on Genomic Position
 #'
-#' This function calculates the genomic region surrounding a given feature, 
-#' based on its coordinates and the chromosomal boundary. It handles both 
+#' This function calculates the genomic region upstream a given gene, 
+#' based on its coordinates and the chromosomal boundaries. It handles both 
 #' circular and linear chromosomes, adjusting the start and end positions for 
 #' the region accordingly. The function also considers the strand orientation 
 #' to return the appropriate upstream or downstream region.
