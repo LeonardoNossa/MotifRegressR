@@ -9,9 +9,10 @@
 #' the species for which to retrieve motifs (e.g., 9606 for Homo sapiens).
 #'
 #' @return A named list of data frames, where each data frame represents the 
-#' PFM of a motif. Each PFM contains the nucleotide frequencies ("A", "C", "G", "T") 
-#' at each position. The names of the list elements correspond to the transcription 
-#' factor names concatenated with their motif IDs (e.g., "TF_name_MA0001").
+#' PFM of a motif. Each PFM contains the nucleotide frequencies 
+#' ("A", "C", "G", "T") at each position. The names of the list elements 
+#' correspond to the transcription factor names concatenated with their motif 
+#' IDs (e.g., "TF_name_MA0001").
 #'
 #' @import httr
 #' @import jsonlite
@@ -27,11 +28,13 @@ online_PFM_loader <- function(tax_id) {
   query <- list(identifiers = tax_id)
   
   response <- httr::GET(url, query = query)
-  content <- jsonlite::fromJSON(content(response, as = "text", encoding = "UTF-8"))
+  content <- jsonlite::fromJSON(content(response, as = "text", 
+                                        encoding = "UTF-8"))
   
   while (TRUE){
     
-    content <- jsonlite::fromJSON(content(response, as = "text", encoding = "UTF-8"))
+    content <- jsonlite::fromJSON(content(response, as = "text", 
+                                          encoding = "UTF-8"))
     results <- content$results
     urls <- results$url
     url <- content$`next`
@@ -44,8 +47,8 @@ online_PFM_loader <- function(tax_id) {
     }
   }
   motif_id <- vapply(X = motif_id, FUN = function(x, split) 
-    {return(unlist(strsplit(x, split))[7])} , 
-                     FUN.VALUE = character(1), split = "/")
+  {return(unlist(strsplit(x, split))[7])} , 
+  FUN.VALUE = character(1), split = "/")
   names(motif_id) <- c()
   
   matrices <- list()
