@@ -14,6 +14,7 @@
 #' names extracted from the file.
 #' 
 #' @importFrom utils read.table
+#' @export
 local_PFM_loader <- function(path){
   
   Tab <-  utils::read.table(path , skip = 9, fill = T)
