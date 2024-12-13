@@ -19,7 +19,8 @@ principal_comps <- function(matrix,explained_var = 95, axis = 2, scale = TRUE){
     matrix <- t(matrix)
   }
   
-  pca <- FactoMineR::PCA(matrix, scale.unit = scale, ncp = ncol(matrix), graph = FALSE)
+  pca <- FactoMineR::PCA(matrix, scale.unit = scale, ncp = ncol(matrix), 
+                         graph = FALSE)
   idx <- which(pca$eig[,3]>=explained_var)[1]
   final_coords <- pca$ind$coord[,seq_len(idx)]
   if (axis == 1){
@@ -27,13 +28,3 @@ principal_comps <- function(matrix,explained_var = 95, axis = 2, scale = TRUE){
   }
   return(final_coords)
 }
-
-
-
-
-
-
-
-
-
-
