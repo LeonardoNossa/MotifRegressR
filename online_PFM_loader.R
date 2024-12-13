@@ -17,6 +17,7 @@
 #' @import httr
 #' @import jsonlite
 #' @import glue
+#' @export
 
 library(httr)
 library(jsonlite)
