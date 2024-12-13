@@ -10,7 +10,7 @@
 #' @return A named list of data frames, where each data frame represents the 
 #' PFM of a motif. Each PFM contains the nucleotide frequencies 
 #' ("A", "C", "G", "T") at each position.
-#' @examples
+#'
 #' @export
 loader <- function(path = NULL, tax_id = NULL){
   if(is.null(tax_id) & !is.null(path)){
