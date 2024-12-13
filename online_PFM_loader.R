@@ -69,7 +69,7 @@ online_PFM_loader <- function(tax_id) {
       matrices <- append(matrices, list(df))
       
     } else {
-      print(paste("Errore nella richiesta:", status_code(response)))
+      print(paste("Error in the request:", status_code(response)))
     }
     
   }
