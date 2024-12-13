@@ -5,7 +5,7 @@
 #' frequencies ("A", "C", "G", "T") at each position for a given motif.
 #' 
 #' @param path A character string representing the path to the file containing 
-#' PFMs.The file should follow the MEME motif format, with motifs identified by 
+#' PFMs.The file should follow the MEME motif format, with motifs identified by
 #' the keyword "MOTIF".
 #'
 #' @return A named list of data frames. Each data frame corresponds to the PFM
@@ -19,17 +19,19 @@ local_PFM_loader <- function(path){
   Tab <-  utils::read.table(path , skip = 9, fill = T)
   motif_indices <- grep("MOTIF", Tab$V1)
   if (all(nchar(Tab[Tab$V1 == "MOTIF",]$V3) > 0)) {
-    motif_names <- paste0(Tab[Tab$V1 == "MOTIF",]$V3,"_",Tab[Tab$V1 == "MOTIF",]$V2)
+    motif_names <- paste0(Tab[Tab$V1 == "MOTIF",]$V3,"_",Tab[Tab$V1 == 
+                                                               "MOTIF",]$V2)
   } else {
     motif_names <- Tab[Tab$V1 == "MOTIF",]$V2
   }
   
-
+  
   motifs <- list()
   for (i in seq_along(motif_indices)) {
     
     start <- motif_indices[i]
-    end <- if (i < length(motif_indices)) motif_indices[i + 1] - 1 else nrow(Tab)
+    end <- if (i < length(motif_indices)) motif_indices[i + 1] - 1 else 
+      nrow(Tab)
     
     motif_name <- motif_names[i]
     motif_df <- Tab[(start + 2) : (end - 1),1:4]
@@ -41,7 +43,8 @@ local_PFM_loader <- function(path){
       motif_df <- motif_df[-(idx:nrow(motif_df)),]
     }
     
-    motif_df <- as.data.frame(apply(motif_df,2,as.numeric), stringsAsFactors = FALSE)
+    motif_df <- as.data.frame(apply(motif_df,2,as.numeric), 
+                              stringsAsFactors = FALSE)
     motifs[[motif_name]] <- motif_df
   }
   return(motifs)
