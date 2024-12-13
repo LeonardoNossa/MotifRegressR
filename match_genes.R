@@ -1,4 +1,4 @@
-#' Match Genes to Protein Information
+#' Match Genes to Protein Information 
 #'
 #' This function matches a vector of gene names to a protein information 
 #' dataset and returns the corresponding protein IDs and preferred names.
