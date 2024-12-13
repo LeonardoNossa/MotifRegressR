@@ -1,4 +1,19 @@
-table_first_genes <- function(tsv,pro){
+#' Create a Table of Filtered Genes and Protein Information
+#'
+#' This function reads a TSV file of genes and a second file with protein 
+#' information, filters the genes, matches them to the protein data, and 
+#' create the resulting table.
+#'
+#' @param tsv A string specifying the path to the TSV file containing gene 
+#' information.
+#' @param pro A string specifying the path to the file containing protein 
+#' information.
+#'
+#' @return A data frame with two columns: `Gene_ID` (the matched protein ID) 
+#' and `Gene_Name` (the corresponding gene name).
+#'
+#' @export
+table_first_genes <- function(tsv, pro) {
   TUSet <- read.table(tsv, 
                       sep = "\t", 
                       header = TRUE, 
@@ -17,37 +32,8 @@ table_first_genes <- function(tsv,pro){
                              stringsAsFactors = FALSE)
   
   result_table <- match_genes(tuGenes_filtered, protein_info)
-  result_table<-rename_first_column(result_table)
-  colnames(result_table) [c(1,2)] <- c('Gene_ID', 'Gene_Name')
+  result_table <- rename_first_column(result_table)
+  colnames(result_table)[c(1, 2)] <- c('Gene_ID', 'Gene_Name')
   
   return(result_table)
 }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
