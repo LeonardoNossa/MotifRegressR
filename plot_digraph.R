@@ -1,3 +1,31 @@
+#' Plot Bipartite Directed Graph of Motifs and Conditions
+#'
+#' This function generates a bipartite directed graph that visualizes 
+#' relationships between motifs and conditions. The edges represent the 
+#' importance of connections (e.g., regression coefficients), and the graph is 
+#' rendered interactively using Plotly.
+#'
+#' @param motif_names A character vector containing the names of motifs.
+#' @param condition_names A character vector containing the names of conditions.
+#' @param edges A data frame containing the edges of the graph.
+#'
+#' @return A Plotly object displaying an interactive bipartite graph where:
+#' \itemize{
+#'   \item Motifs and conditions are represented as nodes.
+#'   \item Edges connecting nodes are color-coded based on the importance 
+#'   values (\code{coef}).
+#'   \item Node hover labels provide additional information such as type 
+#'   (motif/condition).
+#' }
+#'
+#' @import igraph
+#' @import ggraph
+#' @import ggplot2
+#' @import plotly
+#' @importFrom magrittr %>%
+#'
+#' @export
+
 library(igraph)
 library(ggraph)
 library(ggplot2)
