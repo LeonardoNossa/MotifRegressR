@@ -1,4 +1,4 @@
-#' Plot Bipartite Directed Graph of Motifs and Conditions
+#' Plot Bipartite Graph of Motifs and Conditions
 #'
 #' This function generates a bipartite directed graph that visualizes 
 #' relationships between motifs and conditions. The edges represent the 
