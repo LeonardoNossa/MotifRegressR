@@ -1,4 +1,4 @@
-Package: Motif-regressor
+Package: MotifRegressR
 Title: Motif Regressor
 Version: 0.1.0
 Authors@R: 
@@ -8,22 +8,18 @@ Authors@R:
         person("Gabriele", "Oliveto", role = "aut"),
         person("Marco", "Cominelli", role = "aut"),
         person("Teodor", "Devda", role = "aut"),
-        person("Riccardo", “de Sury", role = "aut"),
+        person("Riccardo", "de Sury", role = "aut"),
         person("Laura", "Mottarlini", role = "aut"),
         person("Federico", "Camozzi", role = "aut")
     )
-Description:
-This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and filter sequences to focus on specific operon structures. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions.
+Description: This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and filter sequences to focus on specific operon structures. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports:
-    future, future.apply, utils, httr, jsonlite, glue, FactoMineR
+Imports: future, future.apply, utils, httr, jsonlite, glue, FactoMineR
 biocViews: ShinyApps, WorkflowManagement, StatisticalMethod
-Suggests:
-    knitr,
-    rmarkdown, BiocStyle, devtools
+Suggests: knitr, rmarkdown, BiocStyle, devtools
 VignetteBuilder: knitr
 URL: https://github.com/LeonardoNossa/Motif-regressor
 BugReports: https://github.com/LeonardoNossa/Motif-regressor/issues
