@@ -5,6 +5,10 @@ unpack_simple <- function(simple_sublist,k, alpha){
 
   filtered_coefficients <- coefficients[coefficients[,"Pr(>|t|)"]<=alpha,]
 
+  if (length(filtered_coefficients) == 0) {
+    return(NULL)
+  }
+
   ordered_filtered_coefficients <- filtered_coefficients[order(filtered_coefficients[,"Pr(>|t|)"], decreasing = FALSE), , drop = FALSE]
   ordered_filtered_coefficients <- ordered_filtered_coefficients[rownames(ordered_filtered_coefficients) != "(Intercept)",]
   top_k_coeffients <- ordered_filtered_coefficients[1:min(k,nrow(ordered_filtered_coefficients)), , drop = FALSE]
