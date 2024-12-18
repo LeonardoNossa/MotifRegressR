@@ -6,7 +6,6 @@
 #' rendered interactively using Plotly.
 #'
 #' @param motif_names A character vector containing the names of motifs.
-#' @param condition_names A character vector containing the names of conditions.
 #' @param edges_sublist A named sublist containing the edges of the graph in the
 #' form of a dataframe.
 #'
