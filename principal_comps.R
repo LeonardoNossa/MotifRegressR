@@ -9,8 +9,8 @@
 #' columns are transposed.
 #' @param explained_var A numeric value (default: 95) indicating the percentage
 #' of variance that the retained principal components should explain.
-#' @param axis An integer (default: 2) indicating whether to analyze the input 
-#' matrix as is (`axis = 2`) or transpose it (`axis = 1`).
+#' @param axis An integer (default: 2) indicating whether to PCA on the 
+#' columns (`axis = 2`) or on rows (`axis = 1`).
 #' @param scale A logical value (default: TRUE) indicating whether the variables
 #' should be scaled to unit variance before performing PCA.
 #'
