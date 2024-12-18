@@ -9,7 +9,7 @@
 #' nucleotide frequencies for "A", "C", "G", and "T" at each position.
 #' @param background A numeric vector of length 4 representing the background
 #'  nucleotide probabilities for "A", "C", "G", and "T". 
-#'  The default is `c(0.25, 0.25, 0.25, 0.25)`. Values should sum to 1.
+#'  The default is `c(0.25, 0.25, 0.25, 0.25)`. Values should sum up to 1.
 #'
 #' @return A named list of data frames, where each data frame corresponds to a
 #'  Position Weight Matrix (PWM) for a motif. Each PWM contains log2-transformed
