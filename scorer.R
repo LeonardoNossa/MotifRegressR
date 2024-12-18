@@ -7,8 +7,9 @@
 #'
 #' @param PWM A numeric matrix representing the Position Weight Matrix (PWM). 
 #' The matrix should have 4 rows (for A, C, G, T).
-#' @param dataSeq A character vector containing DNA sequences to be scored. 
-#' Each sequence must be composed of the characters "A", "C", "G", and "T".
+#' @param dataSeq A matrix containing DNA sequences to be 
+#' scored and their corresponding chromosome. 
+#' Each sequence must consist of the characters "A", "C", "G", and "T". 
 #'
 #' @return A numeric matrix with two columns and a number of rows equal to the 
 #' length of `dataSeq`:
