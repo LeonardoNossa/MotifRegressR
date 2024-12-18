@@ -5,7 +5,7 @@
 #' with its associated chromosome and gene name.
 #'
 #' @param FASTA A named list or vector of DNA sequences, where each element is
-#' a sequence.
+#' a sequence. FASTA is obtained using Biostrings::readDNAStringSet
 #' @param row A vector containing the chromosome name, start position, and 
 #' end position of the sequence to extract. The row should be in the 
 #' format: c(chr, start, end).
