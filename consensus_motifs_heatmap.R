@@ -1,4 +1,16 @@
 consensus_motifs_heatmap <- function(consensus_output) {
+
+  if ("LM" %in% names(consensus_output) || "SVM" %in% names(consensus_output) ||
+      "PLS" %in% names(consensus_output) || "Randomized_lasso" %in% consensus_output) {
+    x_label <- "Regressors"
+    title <- "Heatmap of Motif Inclusivity Across Conditions"
+  }
+  else {
+    x_label <- "Conditions"
+    title <- "Heatmap of Motif Inclusivity Across Regression Models"
+
+  }
+
   all_data <- lapply(names(consensus_output), function(condition) {
     data.frame(
       Condition = condition,
@@ -7,10 +19,10 @@ consensus_motifs_heatmap <- function(consensus_output) {
     )
   })
   long_df <- do.call(rbind, all_data)
-  
+
   long_df$Condition <- factor(long_df$Condition, levels = unique(long_df$Condition))
   long_df$Motif <- factor(long_df$Motif, levels = unique(long_df$Motif))
-  
+
   p <- ggplot(long_df, aes(x = Condition, y = Motif, fill = Frequency)) +
     geom_tile(color = "white") +
     scale_fill_gradient(
@@ -32,27 +44,27 @@ consensus_motifs_heatmap <- function(consensus_output) {
       axis.ticks = element_blank()
     ) +
     labs(
-      x = "Conditions",
+      x = x_label,
       y = "Motifs",
-      title = "Heatmap of Motif Inclusivity Across Regression Models"
+      title = title
     ) +
     coord_fixed(ratio = length(unique(long_df$Condition)) / length(unique(long_df$Motif)))
-  
+
   p +
-    
+
     geom_segment(aes(x = as.numeric(Condition) - 0.5, xend = as.numeric(Condition) - 0.5,
                      y = min(as.numeric(Motif)) - 0.5, yend = max(as.numeric(Motif)) + 0.5),
                  color = "black") +
-    
-    
+
+
     geom_segment(aes(x = min(as.numeric(Condition)) - 0.5, xend = max(as.numeric(Condition)) + 0.5,
                      y = as.numeric(Motif) - 0.5, yend = as.numeric(Motif) - 0.5),
                  color = "black") +
-    
+
     geom_segment(aes(x = min(as.numeric(Condition)) - 0.5, xend = max(as.numeric(Condition)) + 0.5,
                      y = max(as.numeric(Motif)) + 0.5, yend = max(as.numeric(Motif)) + 0.5),
                  color = "black") +
-    
+
     geom_segment(aes(x = max(as.numeric(Condition)) + 0.5, xend = max(as.numeric(Condition)) + 0.5,
                      y = min(as.numeric(Motif)) - 0.5, yend = max(as.numeric(Motif)) + 0.5),
                  color = "black")
