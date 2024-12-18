@@ -13,7 +13,6 @@
 #' @return A data frame containing the data read from the specified file.
 #'
 #' @export
-
 compendium_loader <- function(path, header = TRUE, row.names){
   data <- utils::read.table(file = path,
                             sep = ",",
@@ -21,3 +20,4 @@ compendium_loader <- function(path, header = TRUE, row.names){
                             row.names = row.names)
   return(data)
 }
+
