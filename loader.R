@@ -1,11 +1,16 @@
 #' Loader
+#' 
+#' This function allows the user to load a Position Frequency Matrix (PFM) list.
+#' This can be done by either providing a .meme file using `path` argument or by
+#' providing the `tax_id` parameter to perform a query to JAPSPAR database.
+#' If both parameters are provided, then only the local file will be uploaded.
 #'
 #' @param path A character string representing the path to the file containing 
 #' PFMs.The file should follow the MEME motif format, with motifs identified by
 #' the keyword "MOTIF". 
 #' 
 #' @param tax_id A numeric or character vector representing the taxonomy ID of 
-#' the species for which to retrieve motifs (e.g., 9606 for Homo sapiens).
+#' the species for which to retrieve motifs from JASPAR(e.g., 4932 for S.cerevisiae).
 #'
 #' @return A named list of data frames, where each data frame represents the 
 #' PFM of a motif. Each PFM contains the nucleotide frequencies 
