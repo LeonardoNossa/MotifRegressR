@@ -22,5 +22,6 @@ retrieve_logos <- function(PFMs){
 
                 return(logo)}
           )
+  names(logos) <- names(PFMs)
   return(logos)
   }
