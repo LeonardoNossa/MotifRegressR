@@ -4,7 +4,7 @@
 #' `pivot_df` call, distances metrics and clustering approaches and builds
 #' a clustermap.
 #'
-#' @param matric the data.frame coming from `pivot_df`
+#' @param matrix the data.frame coming from `pivot_df`
 #'
 #' @param distance a vector of length 2, containing the distance metrics to be
 #' used. Each element can be a pre-defined character which is in
