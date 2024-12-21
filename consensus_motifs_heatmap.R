@@ -13,84 +13,59 @@
 #'
 #' @export
 consensus_motifs_heatmap <- function(consensus_output) {
-  
-  if ("LM" %in% names(consensus_output) || "SVM" %in% names(consensus_output) ||
-      "PLS" %in% names(consensus_output) || "Randomized_lasso" %in% 
-      consensus_output) {
-    x_label <- "Regressors"
-    title <- "Heatmap of Motif Inclusivity Across Conditions"
-  }
-  else {
-    x_label <- "Conditions"
-    title <- "Heatmap of Motif Inclusivity Across Regression Models"
+    if (any(c("LM", "SVM", "PLS", "Randomized_lasso") %in% names(consensus_output))) {
+        x_label <- "Regressors"
+        title <- "Heatmap of Motif Inclusivity Across Conditions"
+    } else {
+        x_label <- "Conditions"
+        title <- "Heatmap of Motif Inclusivity Across Regression Models"
+    }
     
-  }
-  
-  all_data <- lapply(names(consensus_output), function(condition) {
-    data.frame(
-      Condition = condition,
-      Motif = names(consensus_output[[condition]]),
-      Frequency = unname(consensus_output[[condition]])
+    all_data <- lapply(names(consensus_output), function(condition) {
+        data.frame(
+            Condition = condition,
+            Motif = names(consensus_output[[condition]]),
+            Frequency = unname(consensus_output[[condition]])
+        )
+    })
+    long_df <- do.call(rbind, all_data)
+    
+    long_df$Condition <- factor(long_df$Condition, levels = unique(long_df$Condition))
+    long_df$Motif <- factor(long_df$Motif, levels = unique(long_df$Motif))
+    
+    matrix <- reshape2::acast(long_df, Motif ~ Condition, value.var = "Frequency", fill = 0)
+    
+    color_fun <- circlize::colorRamp2(c(0, 50, 100), c("white", "lightblue", "blue"))
+    
+    heatmap <- Heatmap(
+        matrix,
+        name = "Inclusivity (%)",
+        col = color_fun,
+        cluster_rows = FALSE,
+        cluster_columns = FALSE,
+        row_names_side = "left",
+        row_names_gp = gpar(fontsize = 8),
+        column_names_gp = gpar(fontsize = 10),
+        column_names_rot = 45,
+        width = unit(10, "cm"),
+        height = unit(10, "cm"),
+        row_title = "Motifs",
+        row_title_side = "left",
+        column_title = x_label,
+        column_title_side = "bottom",
+        heatmap_legend_param = list(
+            at = c(0, 25, 50, 75, 100),
+            labels = c("0%", "25%", "50%", "75%", "100%"),
+            legend_gp = gpar(fontsize = 8)
+        )
     )
-  })
-  long_df <- do.call(rbind, all_data)
-  
-  long_df$Condition <- factor(long_df$Condition, levels = 
-                                unique(long_df$Condition))
-  long_df$Motif <- factor(long_df$Motif, levels = unique(long_df$Motif))
-  
-  p <- ggplot(long_df, aes(x = Condition, y = Motif, fill = Frequency)) +
-    geom_tile(color = "white") +
-    scale_fill_gradient(
-      low = "white",
-      high = "blue",
-      name = "Inclusivity (%)",
-      limits = c(0, 100),
-      oob = scales::squish
-    ) +
-    theme_minimal(base_size = 14) +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
-      axis.text.y = element_text(size = 8),
-      axis.title.x = element_text(size = 16),
-      axis.title.y = element_text(size = 16),
-      plot.title = element_text(size = 18, face = "bold"),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.ticks = element_blank()
-    ) +
-    labs(
-      x = x_label,
-      y = "Motifs",
-      title = title
-    ) +
-    coord_fixed(ratio = length(unique(long_df$Condition)) / 
-                  length(unique(long_df$Motif)))
-  
-  p +
     
-    geom_segment(aes(x = as.numeric(Condition) - 0.5, xend = 
-                       as.numeric(Condition) - 0.5,
-                     y = min(as.numeric(Motif)) - 0.5, yend = 
-                       max(as.numeric(Motif)) + 0.5),
-                 color = "black") +
-    
-    
-    geom_segment(aes(x = min(as.numeric(Condition)) - 0.5, 
-                     xend = max(as.numeric(Condition)) + 0.5,
-                     y = as.numeric(Motif) - 0.5,
-                     yend = as.numeric(Motif) - 0.5),
-                 color = "black") +
-    
-    geom_segment(aes(x = min(as.numeric(Condition)) - 0.5, 
-                     xend = max(as.numeric(Condition)) + 0.5,
-                     y = max(as.numeric(Motif)) + 0.5, 
-                     yend = max(as.numeric(Motif)) + 0.5),
-                 color = "black") +
-    
-    geom_segment(aes(x = max(as.numeric(Condition)) + 0.5, 
-                     xend = max(as.numeric(Condition)) + 0.5,
-                     y = min(as.numeric(Motif)) - 0.5, 
-                     yend = max(as.numeric(Motif)) + 0.5),
-                 color = "black")
+    ComplexHeatmap::draw(
+        heatmap,
+        heatmap_legend_side = "right",
+        annotation_legend_side = "right",
+        column_title = title,
+        column_title_side = "top",
+        column_title_gp = gpar(fontsize = 12, fontface = "bold")
+    )
 }
