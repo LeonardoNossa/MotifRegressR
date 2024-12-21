@@ -22,6 +22,11 @@
 #'
 #' @return a clustermap, showing the grouping of motifs and conditions, based on
 #' the importance values.
+#' @importFrom ComplexHeatmap Heatmap
+#' @importFrom ComplexHeatmap draw
+#' @importFrom circlize colorRamp2
+#' @importFrom grid gpar
+#' @importFrom grid unit
 #' @export
 plot_clustermap <- function(matrix,distance = c("euclidean","euclidean"), method = c("complete","complete")){
 
