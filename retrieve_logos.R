@@ -17,8 +17,8 @@ retrieve_logos <- function(PFMs){
                 motif_sublist <- PFMs[x]
                 PFM <- t(PFMs[[x]])
                 colnames(PFM) <- seq_along(1:ncol(PFM))
-                logo <- ggseqlogo::ggseqlogo(PFM, method = "bits",scales = TRUE) +
-                        ggplot2::ggtitle(paste0("Genomic Logo for ",names(motif_sublist)))
+                logo <- suppressWarnings(ggseqlogo::ggseqlogo(PFM, method = "bits") +
+                        ggplot2::ggtitle(paste0("Genomic Logo for ",names(motif_sublist))))
 
                 return(logo)}
           )
