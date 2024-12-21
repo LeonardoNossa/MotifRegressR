@@ -1,5 +1,20 @@
+#' Retrieve Compendium Metadata
+#'
+#' This function takes as input a gene expression compendium
+#' and uses the sample IDs to retrieve metadata from ENA browser
+#'
+#' @param compendium  A matrix where each row is a gene and each column
+#' is a sample. The names of the columns should be IDs retrievable from ENA
+#' browser (e.g. SRR, ERR, DRR etc...). The user is notified when an ID is not
+#' retrievable. An error is displayed when no ID is retrievable
+#'
+#' @return A data.frame, where each row is a sample and columns are metadata
+#' @importFrom httr GET
+#' @importFrom httr content
+#' @importFrom jsonlite fromJSON
+#' @export
 retrieve_metadata <- function(compendium){
-  
+
   SRR_ids <- colnames(compendium)
   SRR_ids_process <- sapply(X = SRR_ids, FUN = function(x){
     if(endsWith(x,".fastq")){
@@ -8,9 +23,9 @@ retrieve_metadata <- function(compendium){
       return(x)
     }
   })
-  
+
   names(SRR_ids_process) <- NULL
-  
+
   res <- sapply(X = SRR_ids_process,FUN = function(x){
     url <- paste0("https://www.ebi.ac.uk/ena/portal/api/filereport?accession=",
                   x,
@@ -23,29 +38,29 @@ retrieve_metadata <- function(compendium){
                   "run_alias,sample_alias,sample_title,first_created&format=json&download=true&limit=0")
     return(url)
   })
-  
+
   response <- sapply(X = res,FUN = httr::GET,simplify = FALSE)
   data <- sapply(X = response, FUN = function(x){
-    entry <- jsonlite::fromJSON(content(x, "text", encoding = "UTF-8"))
+    entry <- jsonlite::fromJSON(httr::content(x, "text", encoding = "UTF-8"))
     if(!(is.data.frame(entry))){
       entry <- list()
     }
     return(entry)
   },simplify = FALSE)
-  
+
   data <- do.call(rbind,data)
   data_df <- as.data.frame(data)
-  
+
   if (ncol(data_df) == 0) {
     stop("No metadata could be fetched!")
   }
-  
+
   missing_entries <- SRR_ids_process[!(SRR_ids_process%in%rownames(data_df))]
   if (length(missing_entries) != 0) {
     mess <- paste0("Sorry! Could NOT fetch metadata for the following sample: ",
                    missing_entries,"\n")
     message(mess)
   }
-  
+
   return(data_df)
 }
