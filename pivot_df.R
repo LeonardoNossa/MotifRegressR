@@ -10,7 +10,6 @@
 #' @return A data.frame, where rows are motifs, and columns are the conditions.
 #' If a motif is not among the top k motifs in that condition, the function will
 #' assign 0.
-#' @export
 pivot_df <- function(df){
 
   rownames <- unique(df$motifs)
