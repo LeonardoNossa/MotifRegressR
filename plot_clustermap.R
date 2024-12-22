@@ -1,10 +1,11 @@
 #' Plot clustermap
 #'
-#' This function takes as input a pivoted data.frame, obtained using
-#' `pivot_df` call, distances metrics and clustering approaches and builds
-#' a clustermap.
+#' This function takes as input A sublist coming from `models2dataframe`,
+#' distances metrics and clustering approaches. The data.frame inside the
+#' sublist is first pivoted using `pivot_df` function, then a clustermap is
+#' built
 #'
-#' @param matrix the data.frame coming from `pivot_df`
+#' @param df_sublist A sublist coming from `models2dataframe`
 #'
 #' @param distance a vector of length 2, containing the distance metrics to be
 #' used. Each element can be a pre-defined character which is in
@@ -28,7 +29,11 @@
 #' @importFrom grid gpar
 #' @importFrom grid unit
 #' @export
-plot_clustermap <- function(matrix,distance = c("euclidean","euclidean"), method = c("complete","complete")){
+plot_clustermap <- function(df_sublist,distance = c("euclidean","euclidean"), method = c("complete","complete")){
+
+  regression_name <- names(df_sublist)
+  df <- df_sublist[[1]]
+  matrix <- pivot_df(df)
 
   distance_row <- distance[1]
   distance_col <- distance[2]
@@ -65,9 +70,9 @@ plot_clustermap <- function(matrix,distance = c("euclidean","euclidean"), method
     heatmap,
     heatmap_legend_side = "right",
     annotation_legend_side = "right",
-    column_title = "Clustermap of motif importance across conditions",
+    column_title = paste0("Clustermap of motif importance across conditions ",
+                          "(",regression_name,")"),
     column_title_side = "top",
     column_title_gp = grid::gpar(fontsize = 12, fontface = "bold"),
   )
 }
-
