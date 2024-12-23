@@ -13,8 +13,8 @@
 pivot_df <- function(df){
   if (nrow(df) == 1) {
     matrix <- matrix(data = df$coef)
-    rownames(matrix) <- colnames(df)[1]
-    colnames(matrix) <- colnames(df)[2]
+    rownames(matrix) <- df$motifs
+    colnames(matrix) <- df$conditions
   } else {
     rownames <- unique(df$motifs)
     colnames <- unique(df$conditions)
