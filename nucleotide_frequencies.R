@@ -4,6 +4,8 @@
 #' nucleotide.
 #' @param fasta The path to the input FASTA file 
 #' @return A named vector with frequencies for each nucleotide.
+#' 
+#' @export
 nucleotide_frequencies <- function(fasta){
     FASTA <- Biostrings::readDNAStringSet(fasta)
     freq <-  Biostrings::alphabetFrequency(FASTA, baseOnly = TRUE)[, c("A", "C", "G", "T")]
@@ -14,5 +16,6 @@ nucleotide_frequencies <- function(fasta){
     }
     return(frequencies)
 }
+
 
 
