@@ -11,13 +11,19 @@
 #' If a motif is not among the top k motifs in that condition, the function will
 #' assign 0.
 pivot_df <- function(df){
-
-  rownames <- unique(df$motifs)
-  colnames <- unique(df$conditions)
-  matrix <- sapply(X = colnames, FUN = function(condition){
-    sapply(X = rownames,
-           FUN = function(x){return(return_score(df,x,condition))})
-  })
+  if (nrow(df) == 1) {
+    matrix <- matrix(data = df$coef)
+    rownames(matrix) <- colnames(df)[1]
+    colnames(matrix) <- colnames(df)[2]
+  } else {
+    rownames <- unique(df$motifs)
+    colnames <- unique(df$conditions)
+    matrix <- sapply(X = colnames, FUN = function(condition){
+      sapply(X = rownames,
+             FUN = function(x){return(return_score(df,x,condition))})
+   })
+  }
+  return(matrix)
 }
 
 #' Retrieve importance score
