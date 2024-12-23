@@ -12,7 +12,7 @@ Authors@R:
         person("Laura", "Mottarlini", role = "aut"),
         person("Federico", "Camozzi", role = "aut")
     )
-Description: This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and retrieve metadata of gene expression conditions. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions. Visualization function finally help the user in the sense-making step of the analyses.
+Description: This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and retrieve metadata of gene expression conditions. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions. Visualization functions finally help the user in the sense-making step of the analyses.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
