@@ -18,5 +18,6 @@ compendium_loader <- function(path, header = TRUE, row.names,sep = ","){
                             sep = sep,
                             header = header,
                             row.names = row.names)
+  colnames(data) <- gsub(".fastq", "", colnames(data))
   return(data)
 }
