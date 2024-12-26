@@ -10,8 +10,9 @@
 #' @param metadata A data frame containing metadata for the samples,
 #' where each row corresponds to a sample in `compendium`,
 #' if metadata for that sample are available.
+#' If NULL tooltips will just display the ID of the sample contained in `compendium`
 #' @param color_by A string specifying the column name in `metadata`
-#' to be used for coloring points in the plot.
+#' to be used for coloring points in the plot. MUST be NULL if `metadata` is NULL
 #' @param method A string specifying the dimensionality reduction method.
 #' Options are "PCA", "MDS", "t-SNE", or "UMAP". Defaults to "PCA".
 #'
@@ -35,8 +36,8 @@
 #' @export
 plot_dimensionality_reduction <- function(compendium, metadata = NULL, color_by = NULL, method = "PCA"){
 
-  if((!is.null(metadata) && is.null(color_by))||(is.null(metadata)&&!is.null(color_by))){
-    stop("When either metadata or color_by are NULL, both of them MUST be NULL")
+  if(is.null(metadata)&&!is.null(color_by)){
+    stop("When metadata is NULL, color_by MUST also be NULL")
   }
 
   `%>%` <- magrittr::`%>%`
@@ -82,7 +83,7 @@ plot_dimensionality_reduction <- function(compendium, metadata = NULL, color_by 
       x = ~ .data[[colnames(reduction_result)[1]]],
       y = ~ .data[[colnames(reduction_result)[2]]],
       type = 'scatter', mode = 'markers',
-      marker = list(size = 10, color = 'blue'),
+      marker = list(size = 10, color = '#636EFA'),
       text = ~Tooltip,
       hoverinfo = "text"
     ) %>% plotly::layout(
@@ -116,8 +117,55 @@ plot_dimensionality_reduction <- function(compendium, metadata = NULL, color_by 
     metadata <- metadata %>% tibble::rownames_to_column(var = "Sample")
   }
 
-  if (!color_by %in% colnames(metadata)) {
+  if (!color_by %in% colnames(metadata) && !is.null(color_by)) {
     stop(paste("Column", color_by, "does not exist in 'metadata' data.frame"))
+  }
+
+  if (is.null(color_by)) {
+    tooltip_text <- apply(metadata, 1, function(row) {
+      to_keep <- c("study_accession", "tax_id", "scientific_name", "instrument_model", "sample_title")
+      paste(
+        paste0("run_accession: ", row["run_accession"]),
+        paste(names(row[to_keep]), row[to_keep], sep = ": ", collapse = "<br>"),
+        sep = "<br>"
+      )
+    })
+
+    reduction_data <- reduction_result %>% dplyr::left_join(metadata, by = "Sample")
+
+    fig <- plotly::plot_ly(
+      data = reduction_data,
+      x = ~ .data[[colnames(reduction_result)[1]]],
+      y = ~ .data[[colnames(reduction_result)[2]]],
+      type = 'scatter', mode = 'markers',
+      marker = list(size = 10, color = '#636EFA'),
+      text = ~tooltip_text[match(Sample, metadata$Sample)],
+      hoverinfo = "text"
+    ) %>% plotly::layout(
+      title = paste(method, 'on Conditions'),
+      xaxis = list(title = axis_labels[1]),
+      yaxis = list(title = axis_labels[2]),
+      legend = list(orientation = 'h', x = 0, y = -0.2)
+    )
+
+    fig <- htmlwidgets::onRender(fig, "
+    function(el, x) {
+      el.on('plotly_selected', function(data) {
+        if (data && data.points) {
+          var selected_accessions = data.points.map(pt => {
+            var tooltip = pt.text || '';
+            var accession_match = tooltip.match(/run_accession: ([^<]+?)(?=<br>|$)/);
+            return accession_match ? accession_match[1] : null;
+          }).filter(accession => accession !== null);
+          Shiny.onInputChange('selected_run_accession', selected_accessions);
+        } else {
+          Shiny.onInputChange('selected_run_accession', null);
+        }
+      });
+    }
+    ");
+
+    return(fig)
   }
 
   reduction_data <- reduction_result %>%
