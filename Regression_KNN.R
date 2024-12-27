@@ -22,11 +22,11 @@ Regression_KNN <- function(Scores, TPMs, Condition) {
   set.seed(42)
 
   doFuture::registerDoFuture()
-  future::plan(future::multisession, workers = 5)
+  future::plan(future::multisession, workers = 10)
 
   rfe_control <- caret::rfeControl(functions = caret::caretFuncs,
                                    method = "cv",
-                                   number = 5,
+                                   number = 3,
                                    allowParallel = TRUE)
 
   rfe_results <- future::future({
