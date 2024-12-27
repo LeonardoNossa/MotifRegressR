@@ -29,12 +29,12 @@ Regression_KNN <- function(Scores, TPMs, Condition) {
   cl <- parallel::makeCluster(num_cores)
   doParallel::registerDoParallel(cl)
 
-  rfe_control <- caret::rfeControl(
+  rfe_control <- suppressWarnings(caret::rfeControl(
     functions = caret::caretFuncs,
     method = "cv",
     number = 3,
     allowParallel = TRUE
-  )
+  ))
 
   rfe_results <- caret::rfe(
     x = Scores,
