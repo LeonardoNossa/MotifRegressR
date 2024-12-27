@@ -23,15 +23,19 @@
 #' @importFrom caret rfeControl caretFuncs rfe
 Regression_KNN <- function(Scores, TPMs, Condition) {
 
+  suppressPackageStartupMessages(library(caret))
+
   num_cores <- 10
   cl <- parallel::makeCluster(num_cores)
   doParallel::registerDoParallel(cl)
-  rfe_control <- suppressWarnings(caret::rfeControl(
+
+  rfe_control <- caret::rfeControl(
     functions = caret::caretFuncs,
     method = "cv",
     number = 3,
     allowParallel = TRUE
-  ))
+  )
+
   rfe_results <- caret::rfe(
     x = Scores,
     y = TPMs[, Condition],
@@ -39,6 +43,7 @@ Regression_KNN <- function(Scores, TPMs, Condition) {
     rfeControl = rfe_control,
     method = "knn"
   )
+
   suppressWarnings(parallel::stopCluster(cl))
   return(rfe_results)
 }
