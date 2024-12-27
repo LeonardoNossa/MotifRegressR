@@ -19,8 +19,6 @@
 #' @importFrom doFuture registerDoFuture
 Regression_KNN <- function(Scores, TPMs, Condition) {
 
-  set.seed(42)
-
   doFuture::registerDoFuture()
   future::plan(future::multisession, workers = 10)
 
