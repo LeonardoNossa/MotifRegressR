@@ -10,7 +10,7 @@
 #' be saved.
 #'
 #' @noRd
-
+#' @export
 extract_first_ten_motifs <- function(input_file_path, output_file_path) {
   # Read the original MEME file
   lines <- readLines(input_file_path)
