@@ -19,7 +19,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: future, future.apply, utils, httr, jsonlite, glue, FactoMineR, ComplexHeatmap, Rtsne, caret, ggseqlogo, monaLisa, pls, umap
 biocViews: ShinyApps, WorkflowManagement, StatisticalMethod
-Suggests: knitr, rmarkdown, BiocStyle, devtools
+Suggests: knitr, rmarkdown, BiocStyle, devtools, extract_first_ten_motifs
 VignetteBuilder: knitr
 URL: https://github.com/LeonardoNossa/MotifRegressR
 BugReports: https://github.com/LeonardoNossa/MotifRegressR/issues
