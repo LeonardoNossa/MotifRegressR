@@ -1,5 +1,9 @@
 #' PFM Loader
 #'
+#' This function allows users to load PFMs either from a local file in MEME 
+#' format or by specifying a taxonomy ID to retrieve motifs from an online 
+#' database.
+#'
 #' @param path A character string representing the path to the file containing
 #' PFMs.The file should follow the MEME motif format, with motifs identified by
 #' the keyword "MOTIF".
