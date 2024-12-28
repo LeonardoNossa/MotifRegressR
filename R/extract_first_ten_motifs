@@ -1,0 +1,42 @@
+#' Extract first ten motifs
+#'
+#' This function reads a MEME file, extracts the first 10 motifs, and saves them
+#' to a new output file. The function is not intended to be used directly by the
+#' user, but is provided as an example in the vignette.
+#'
+#' @param file_path A path to the MEME file from which the motifs will be 
+#' extracted.
+#' @param output_file A path to the output file where the first 10 motifs will 
+#' be saved.
+#'
+#' @noRd
+
+extract_first_ten_motifs <- function(input_file_path, output_file_path) {
+  # Read the original MEME file
+  lines <- readLines(input_file_path)
+  
+  # Find lines starting with "MOTIF" (indicating the start of motifs)
+  motif_start <- grep("^MOTIF", lines)
+  
+  # Select the first 10 motifs (or fewer if less than 10)
+  motifs_to_keep <- motif_start[1:min(10, length(motif_start))]
+  
+  # Create a new vector to store the output
+  new_lines <- c()
+  
+  # Add all the lines from the header (before the first motif)
+  new_lines <- c(new_lines, lines[1:(motif_start[1] - 1)])
+  
+  # Extract the motifs and append them to new_lines
+  for (motif in motifs_to_keep) {
+    new_lines <- c(new_lines, lines[motif])  # Add the motif line
+    # Find the next motif's start (or the end of the file)
+    end_of_motif <- ifelse(motif + 1 <= length(lines), 
+                           grep("^MOTIF", lines[(motif + 1):length(lines)]), 
+                           0) + motif
+    new_lines <- c(new_lines, lines[(motif + 1):(end_of_motif - 1)])
+  }
+  
+  # Write the new lines to the output MEME file
+  writeLines(new_lines, output_file_path)
+}
