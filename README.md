@@ -28,7 +28,7 @@ experimental conditions. Visualization functions finally help the user in the
 sense-making step of the analyses.
 
 
-If you want to see some example you can see the [Vignette.html](Vignette.html) file in the [doc](doc) folder.
+If you want to see some examples you can see the [Vignette.html](Vignette.html) file in the [doc](doc) folder.
 
 ## How to Use This Repository
 If you're interested in running the analysis yourself, please follow the instruction in the [Vignette.html](Vignette.html) 
