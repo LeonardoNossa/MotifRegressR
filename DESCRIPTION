@@ -21,5 +21,5 @@ Imports: future, future.apply, utils, httr, jsonlite, glue, FactoMineR, ComplexH
 biocViews: ShinyApps, WorkflowManagement, StatisticalMethod
 Suggests: knitr, rmarkdown, BiocStyle, devtools
 VignetteBuilder: knitr
-URL: https://github.com/LeonardoNossa/Motif-regressor
-BugReports: https://github.com/LeonardoNossa/Motif-regressor/issues
+URL: https://github.com/LeonardoNossa/MotifRegressR
+BugReports: https://github.com/LeonardoNossa/MotifRegressR/issues
