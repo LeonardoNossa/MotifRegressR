@@ -8,8 +8,6 @@
 #' extracted.
 #' @param output_file A path to the output file where the first 10 motifs will 
 #' be saved.
-#'
-#' @noRd
 
 extract_first_ten_motifs <- function(input_file_path, output_file_path) {
   # Read the original MEME file
