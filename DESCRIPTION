@@ -4,13 +4,13 @@ Version: 0.1.0
 Authors@R: 
     c(
         person("Leonardo", "Nossa", email = "leonardo.nossa@studenti.unimi.it", role = c("aut", "cre")),
-        person("Elena", "Sasso", role = "aut"),
-        person("Gabriele", "Oliveto", role = "aut"),
+        person("Federico", "Camozzi", role = "aut"),
         person("Marco", "Cominelli", role = "aut"),
-        person("Teodor", "Devda", role = "aut"),
         person("Riccardo", "de Sury", role = "aut"),
+        person("Teodor", "Devda", role = "aut"),
         person("Laura", "Mottarlini", role = "aut"),
-        person("Federico", "Camozzi", role = "aut")
+        person("Gabriele", "Oliveto", role = "aut"),
+        person("Elena", "Sasso", role = "aut")
     )
 Description: This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and retrieve metadata of gene expression conditions. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions. Visualization function finally help the user in the sense-making step of the analyses.
 License: MIT + file LICENSE
