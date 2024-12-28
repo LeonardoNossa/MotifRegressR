@@ -17,7 +17,7 @@
 #' regression type.
 #'
 #' @export
-regressor <- function(scores, compendium, conditions, regression_type){
+regressor <- function(scores, compendium, conditions, regression_type, regression_params_list){
 
   scores <- as.data.frame(scores)
 
@@ -27,8 +27,9 @@ regressor <- function(scores, compendium, conditions, regression_type){
 
   output <- list()
   for (regression in regression_type){
+    regression_params <- regression_params_list[[regression]]
     regression_models <- train_models(scores, compendium, conditions,
-                                      regression)
+                                      regression,regression_params)
     output[[regression]] <- regression_models
   }
   return(output)
@@ -56,7 +57,7 @@ regressor <- function(scores, compendium, conditions, regression_type){
 #'
 #' @return A named list where each element corresponds to a regression model for
 #'  a specific condition.
-train_models <- function(S, EXPN, conditions, regression = "LM") {
+train_models <- function(S, EXPN, conditions, regression,regression_params) {
   regression_func <- switch(
     as.character(regression),
     "Randomized_lasso" = Regression_lasso,
@@ -64,12 +65,13 @@ train_models <- function(S, EXPN, conditions, regression = "LM") {
     "SVM" = Regression_svm,
     "LM" = Regression_simple,
     "KNN" = Regression_KNN,
+    "RF" = Regression_RF,
     NULL
   )
 
   if (is.null(regression_func)) {
     stop("Please, choose among the following options:
-         \n- Randomized_lasso\n- PLS\n- SVM\n- LM\n- KNN")
+         \n- Randomized_lasso\n- PLS\n- SVM\n- LM\n- KNN\n- RF")
   }
 
   if (is.character(conditions)){
@@ -85,7 +87,7 @@ train_models <- function(S, EXPN, conditions, regression = "LM") {
 
   output_all <- sapply(
     X = conditions, FUN = function(condition_id){
-      output <- regression_func(S, EXPN, condition_id)
+      output <- regression_func(S, EXPN, condition_id, regression_params)
       return(output)
     },
     simplify = FALSE
@@ -111,8 +113,16 @@ train_models <- function(S, EXPN, conditions, regression = "LM") {
 #' representing the results of the stability selection process.
 #'
 #' @importFrom monaLisa randLassoStabSel
-Regression_lasso <- function(Scores, TPMs, Condition){
-  regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition])
+Regression_lasso <- function(Scores, TPMs, Condition, params){
+  if (all(is.na(params))) {
+    regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition])
+  } else {
+    if (params["cutoff"] <= 0.5){
+      message("'cutoff' value is <= 0.5, setting it to 0.51 to avoid errors!")
+    }
+    cutoff <- ifelse(params["cutoff"] <= 0.5, 0.51, params["cutoff"])
+    regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], cutoff = cutoff)
+  }
   return(regr_mona)
 }
 
@@ -135,14 +145,17 @@ Regression_lasso <- function(Scores, TPMs, Condition){
 #' representing the PLS regression model with the optimal number of components.
 #'
 #' @importFrom pls plsr
-Regression_pls <- function(Scores, TPMs, Condition) {
-  ncomp = dim(Scores)[2]
-  y <- TPMs[,Condition]
-  x <- as.matrix(Scores)
+Regression_pls <- function(Scores, TPMs, Condition, params) {
 
-  model_all_component <- pls::plsr(y ~ x, ncomp = ncomp, validation = "CV")
-  optimal_ncomp <- which.min(model_all_component$validation$PRESS)
-  pls_model <- pls::plsr(y ~ x, ncomp = optimal_ncomp, validation = "CV")
+  if (all(is.na(params))) {
+    ncomp = dim(Scores)[2]
+    y <- TPMs[,Condition]
+    x <- as.matrix(Scores)
+
+    model_all_component <- pls::plsr(y ~ x, ncomp = ncomp, validation = "CV")
+    optimal_ncomp <- which.min(model_all_component$validation$PRESS)
+    pls_model <- pls::plsr(y ~ x, ncomp = optimal_ncomp, validation = "CV")
+  }
   return(pls_model)
 }
 
@@ -163,8 +176,11 @@ Regression_pls <- function(Scores, TPMs, Condition) {
 #' representing the fitted linear model.
 #'
 #' @importFrom stats lm
-Regression_simple <- function(Scores, TPMs, Condition){
-  regr_simple <- lm(TPMs[,Condition] ~ ., data = Scores)
+Regression_simple <- function(Scores, TPMs, Condition, params){
+
+  if (all(is.na(params))) {
+    regr_simple <- lm(TPMs[,Condition] ~ ., data = Scores)
+  }
   return(regr_simple)
 }
 
@@ -185,8 +201,20 @@ Regression_simple <- function(Scores, TPMs, Condition){
 #' representing the fitted SVM regression model.
 #'
 #' @importFrom e1071 svm
-Regression_svm <- function(Scores, TPMs, Condition){
-  regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition], kernel = "linear")
+Regression_svm <- function(Scores, TPMs, Condition, params){
+
+  accepted_kernels <- c("linear", "radial", "polynomial", "sigmoid")
+
+  if (all(is.na(params))) {
+    regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition])
+  } else {
+
+    if (!params["kernel"]%in%accepted_kernels) {
+      message("'kernel' NOT supported, defaulting to radial kernel")
+    }
+    kernel <- ifelse(params["kernel"] %in% accepted_kernels, params["kernel"], "radial")
+    regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition], kernel = kernel)
+  }
   return(regr_svm)
 }
 
@@ -213,18 +241,44 @@ Regression_svm <- function(Scores, TPMs, Condition){
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom caret rfeControl caretFuncs rfe
-Regression_KNN <- function(Scores, TPMs, Condition) {
+Regression_KNN <- function(Scores, TPMs, Condition, params) {
 
   suppressPackageStartupMessages(library(caret))
 
-  num_cores <- 10
+  if (all(is.na(params))) {
+    num_cores <- 10
+    cv <- 3
+
+  } else if ((is.na(params["num_cores"])) && (!is.na(params["cv"]))) {
+
+    num_cores <- 10
+    if (params["cv"] <= 1) {
+      message("'cv' value is <= 1, setting it to 2 to avoid errors!")
+    }
+    cv <- ifelse(params["cv"] <= 1, 2, params["cv"])
+
+  } else if ((is.na(params["cv"])) && (!is.na(params["num_cores"]))) {
+
+    num_cores <- params["num_cores"]
+    cv <- 3
+
+  } else {
+
+    num_cores <- params["num_cores"]
+    if (params["cv"] <= 1) {
+      message("'cv' value is <= 1, setting it to 2 to avoid errors!")
+    }
+    cv <- ifelse(params["cv"] <= 1, 2, params["cv"])
+
+  }
+
   cl <- parallel::makeCluster(num_cores)
   doParallel::registerDoParallel(cl)
 
   rfe_control <- suppressWarnings(caret::rfeControl(
     functions = caret::caretFuncs,
     method = "cv",
-    number = 3,
+    number = cv,
     allowParallel = TRUE
   ))
 
@@ -239,3 +293,59 @@ Regression_KNN <- function(Scores, TPMs, Condition) {
   suppressWarnings(parallel::stopCluster(cl))
   return(rfe_results)
 }
+
+#' Retrieve Regression Parameter List
+#'
+#' This function generates a named list containing the parameters for various regression models,
+#' including Randomized Lasso, PLS (Partial Least Squares), Linear Model (LM), K-Nearest Neighbors (KNN),
+#' Support Vector Machines (SVM), and Random Forest (RF).
+#' Users can supply specific values for each regression method's parameters, or leave them as `NA` to use defaults.
+#'
+#' @param Regression_lasso_cutoff Numeric. Cutoff value for Randomized Lasso regression. Defaults to `NA`.
+#' @param Regression_svm_kernel Character. Specifies the kernel type for SVM (e.g., "linear", "radial"). Defaults to `NA`.
+#' @param Regression_KNN_num_cores Integer. Number of cores to use for parallel processing in KNN. Defaults to `NA`.
+#' @param Regression_KNN_cv Integer. Number of cross-validation folds for KNN. Defaults to `NA`.
+#' @param Regression_RF_ntree Integer. Number of trees to grow in the Random Forest. Defaults to `NA`.
+#' @param Regression_RF_mtry Integer. Number of variables randomly sampled as candidates at each split in Random Forest. Defaults to `NA`.
+#'
+#' @return A named list of vectors, where each vector contains parameters specific to one regression model:
+#' \itemize{
+#'   \item \code{Randomized_lasso}: A vector containing the \code{cutoff} parameter.
+#'   \item \code{PLS}: `NA` (placeholder for Partial Least Squares parameters).
+#'   \item \code{LM}: `NA` (placeholder for Linear Model parameters).
+#'   \item \code{KNN}: A vector containing \code{num_cores} and \code{cv} parameters.
+#'   \item \code{SVM}: A vector containing the \code{kernel} parameter.
+#'   \item \code{RF}: A vector containing \code{ntree} and \code{mtry} parameters.
+#' }
+#'
+#' @export
+retrieve_params_list <- function(Regression_lasso_cutoff = NA,
+                                 Regression_svm_kernel = NA,
+                                 Regression_KNN_num_cores = NA,
+                                 Regression_KNN_cv = NA,
+                                 Regression_RF_ntree = NA,
+                                 Regression_RF_mtry = NA){
+
+  pls <- NA
+  simple <- NA
+
+  lasso <- c(cutoff = Regression_lasso_cutoff)
+  svm <- c(kernel = Regression_svm_kernel)
+
+  knn <- c(num_cores = Regression_KNN_num_cores,
+           cv = Regression_KNN_cv)
+
+  rf <- c(ntree = Regression_RF_ntree,
+          mtry = Regression_RF_mtry)
+
+  params_list <- list(Randomized_lasso = lasso,
+                      PLS = pls,
+                      LM = simple,
+                      KNN = knn,
+                      SVM = svm,
+                      RF = rf)
+
+  return(params_list)
+}
+
+
