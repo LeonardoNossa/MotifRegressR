@@ -8,7 +8,7 @@ Bioinformatics for Computational Genomics.
 ## Authors
 This project was developed by [Leonardo Nossa](https://github.com/LeonardoNossa), 
 [Federico Camozzi](https://github.com/Federico-Camozzi), [Marco Cominelli](https://github.com/marco-cominelli01), 
-[Riccardo de Sury](), [Teodor Devda](https://github.com/doroteo17), [Laura Mottarlini](),
+[Riccardo de Sury](https://github.com/riccardodesury), [Teodor Devda](https://github.com/doroteo17), [Laura Mottarlini](),
 [Gabriele Oliveto](https://github.com/Gab-23) and [Elena Sasso](https://github.com/elenasasso).
 
 
