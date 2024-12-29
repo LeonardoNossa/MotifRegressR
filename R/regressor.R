@@ -114,17 +114,17 @@ train_models <- function(S, EXPN, conditions, regression,regression_params) {
 #'
 #' @importFrom monaLisa randLassoStabSel
 Regression_lasso <- function(Scores, TPMs, Condition, params){
+
+  cutoff <- params["cutoff"]
   if (all(is.na(params))) {
     regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition])
   } else {
-    if (params["cutoff"] <= 0.5){
+    if (cutoff <= 0.5){
       warning("'cutoff' value is <= 0.5, setting it to 0.51 to avoid errors!")
       cutoff <- 0.51
-    } else if (params["cutoff"] > 1) {
+    } else if (cutoff > 1) {
       warning("'cutoff' value is > 1, setting it to 1 to avoid errors!")
       cutoff <- 1
-    } else {
-      cutoff <- params["cutoff"]
     }
   }
   regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], cutoff = cutoff)
@@ -208,17 +208,17 @@ Regression_simple <- function(Scores, TPMs, Condition, params){
 #' @importFrom e1071 svm
 Regression_svm <- function(Scores, TPMs, Condition, params){
 
+  kernel <- params["kernel"]
   accepted_kernels <- c("linear", "radial", "polynomial", "sigmoid")
 
   if (all(is.na(params))) {
     regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition])
   } else {
-    if (!params["kernel"]%in%accepted_kernels) {
+    if (!kernel%in%accepted_kernels) {
       warning("'kernel' NOT supported, defaulting to radial kernel")
       kernel <- "radial"
-    } else {
-      kernel <- params["kernel"]
     }
+
     regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition], kernel = kernel)
   }
   return(regr_svm)
@@ -251,42 +251,45 @@ Regression_KNN <- function(Scores, TPMs, Condition, params){
 
   suppressPackageStartupMessages(library(caret))
 
+  num_cores <- params["num_cores"]
+  cv <- params["cv"]
+
   if (all(is.na(params))) {
     num_cores <- parallel::detectCores()
     cv <- 3
 
-  } else if ((is.na(params["num_cores"])) && (!is.na(params["cv"]))) {
+  } else if ((is.na(num_cores)) && (!is.na(cv))) {
     num_cores <- parallel::detectCores()
-    if (params["cv"] <= 1){
+    if (cv <= 1){
       warning("'cv' value is <= 1, setting it to 2 to avoid errors!")
       cv <- 2
-    } else if (params["cv"] > nrow(Scores)){
+    } else if (cv > nrow(Scores)){
       warning("'cv' value is > [number of data points], setting it to [number of data points] to avoid errors! [LOOCV]")
       cv <- nrow(Scores)
     }
 
-  } else if ((is.na(params["cv"])) && (!is.na(params["num_cores"]))) {
+  } else if ((is.na(cv)) && (!is.na(num_cores))) {
     cv <- 3
-    if (params["num_cores"] < 1){
+    if (num_cores < 1){
       warning("'num_cores' value is < 1, setting it to 1 to avoid errors!")
       num_cores <- 1
-    } else if (params["num_cores"] > parallel::detectCores()){
+    } else if (num_cores > parallel::detectCores()){
       warning("'num_cores' value is > [number of available cores], setting it to [number of available cores] to avoid errors!")
       num_cores <- parallel::detectCores()
     }
 
   } else {
-    if (params["cv"] <= 1){
+    if (cv <= 1){
       warning("'cv' value is <= 1, setting it to 2 to avoid errors!")
       cv <- 2
-    } else if (params["cv"] > nrow(Scores)){
+    } else if (cv > nrow(Scores)){
       warning("'cv' value is > [number of data points], setting it to [number of data points] to avoid errors! [LOOCV]")
       cv <- nrow(Scores)
     }
-    if (params["num_cores"] < 1){
+    if (num_cores < 1){
       warning("'num_cores' value is < 1, setting it to 1 to avoid errors!")
       num_cores <- 1
-    } else if (params["num_cores"] > parallel::detectCores()){
+    } else if (num_cores > parallel::detectCores()){
       warning("'num_cores' value is > [number of available cores], setting it to [number of available cores] to avoid errors!")
       num_cores <- parallel::detectCores()
     }
@@ -333,36 +336,39 @@ Regression_KNN <- function(Scores, TPMs, Condition, params){
 #' @importFrom randomForest randomForest
 Regression_RF <- function(Scores, TPMs, Condition, params) {
 
+  ntree <- params["ntree"]
+  mtry <- params["mtry"]
+
   if (all(is.na(params))) {
     ntree <- 500
     mtry <- floor(sqrt(ncol(Scores)))
 
-  } else if ((is.na(params["ntree"])) && (!is.na(params["mtry"]))) {
+  } else if ((is.na(ntree)) && (!is.na(mtry))) {
     ntree <- 500
-    if (params["mtry"] < 1) {
+    if (mtry < 1) {
       warning("'mtry' < 1, setting it to 1 to avoid errors!")
       mtry <- 1
-    } else if (params["mtry"] > ncol(Scores)){
+    } else if (mtry > ncol(Scores)){
       warning("'mtry' > [number of features], setting it to [number of features] to avoid errors!")
       mtry <- ncol(Scores)
     }
 
-  } else if ((is.na(params["mtry"])) && (!is.na(params["ntree"]))) {
+  } else if ((is.na(mtry)) && (!is.na(ntree))) {
     mtry <- floor(sqrt(ncol(Scores)))
-    if (params["ntree"] < 1){
+    if (ntree < 1){
       warning("'ntree' < 1, setting it to 1 to avoid errors!")
       ntree <- 1
     }
 
   } else {
-    if (params["ntree"] < 1){
+    if (ntree < 1){
       warning("'ntree' < 1, setting it to 1 to avoid errors!")
       ntree <- 1
     }
-    if (params["mtry"] < 1) {
+    if (mtry < 1) {
       warning("'mtry' < 1, setting it to 1 to avoid errors!")
       mtry <- 1
-    } else if (params["mtry"] > ncol(Scores)){
+    } else if (mtry > ncol(Scores)){
       warning("'mtry' > [number of features], setting it to [number of features] to avoid errors!")
       mtry <- ncol(Scores)
     }
@@ -370,7 +376,6 @@ Regression_RF <- function(Scores, TPMs, Condition, params) {
 
   Scores <- as.matrix(Scores)
   EXP <- TPMs[, Condition]
-  mtry <- ifelse(is.null(mtry), floor(sqrt(ncol(Scores))), mtry)
   model <- randomForest::randomForest(x = Scores,
                                       y = EXP,
                                       ntree = ntree,
