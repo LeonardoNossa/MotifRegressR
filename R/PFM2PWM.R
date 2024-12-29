@@ -13,8 +13,8 @@
 #'
 #' @return A named list of data frames, where each data frame corresponds to a
 #'  Position Weight Matrix (PWM) for a motif. Each PWM contains log2-transformed
-#'  weights relative to the background probabilities. The frequencies are adjusted 
-#'  with a small constant (0.01) to avoid log(0) errors.
+#'  weights relative to the background probabilities. The frequencies are  
+#'  adjusted with a small constant (0.01) to avoid log(0) errors.
 #' 
 #' @export
 PFM2PWM <- function(PFMs, background = c(0.25, 0.25, 0.25, 0.25)) {
@@ -27,3 +27,4 @@ PFM2PWM <- function(PFMs, background = c(0.25, 0.25, 0.25, 0.25)) {
   }
   return(PWMs)
 }
+
