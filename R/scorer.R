@@ -6,10 +6,11 @@
 #'
 #' @param PWMs A list of Position Weight Matrices (PWMs). Each PWM in the list
 #'  should be a numeric matrix with 4 rows (corresponding to A, C, G, T).
-#' @param dataSeq A matrix containing chromosomes names and the DNA sequences to be
-#' scored. Each sequence must consist of the characters "A", "C", "G", and "T".
-#' The names of the vector will be used as row names in the output.
-#' @param workers integer, the number of cores to assign for parallel computations
+#' @param dataSeq A matrix containing chromosomes names and the DNA sequences to
+#' be scored. Each sequence must consist of the characters "A", "C", "G", and 
+#' "T". The names of the vector will be used as row names in the output.
+#' @param workers integer, the number of cores to assign for parallel 
+#' computations
 #'
 #' @return A numeric matrix where:
 #' \item{Rows}{Correspond to the DNA sequences (named from `dataSeq`).}
@@ -19,28 +20,29 @@
 #' @importFrom Biostrings reverseComplement
 #' @export
 scorer <- function(PWMs,dataSeq,workers = 4, both = TRUE){
-
+  
   S_for <- AllScores(PWMs = PWMs,
                      dataSeq = dataSeq,
                      workers = workers)
-
+  
   if (both) {
-
+    
     revs <- sapply(X = seq_along(1:nrow(dataSeq)),
                    FUN = function(idx){
                      row <- dataSeq[idx,]
                      seq <- Biostrings::DNAString(row[2])
-                     rev_seq <- as.character(Biostrings::reverseComplement(x = seq))
+                     rev_seq <- 
+                       as.character(Biostrings::reverseComplement(x = seq))
                      return(rev_seq)
                    })
-
+    
     rev_sequences <- cbind(dataSeq[,1],revs)
     colnames(rev_sequences) <- colnames(dataSeq)
-
+    
     S_rev <- AllScores(PWMs = PWMs,
                        dataSeq = rev_sequences,
                        workers = workers)
-
+    
     final_mat <- ifelse(S_for>S_rev,S_for,S_rev)
     return(final_mat)
   }
@@ -57,10 +59,11 @@ scorer <- function(PWMs,dataSeq,workers = 4, both = TRUE){
 #'
 #' @param PWMs A list of Position Weight Matrices (PWMs). Each PWM in the list
 #'  should be a numeric matrix with 4 rows (corresponding to A, C, G, T).
-#' @param dataSeq A matrix containing chromosomes names and the DNA sequences to be
-#' scored. Each sequence must consist of the characters "A", "C", "G", and "T".
-#' The names of the vector will be used as row names in the output.
-#' @param workers integer, the number of cores to assign for parallel computations
+#' @param dataSeq A matrix containing chromosomes names and the DNA sequences to
+#' be scored. Each sequence must consist of the characters "A", "C", "G", and 
+#' "T". The names of the vector will be used as row names in the output.
+#' @param workers integer, the number of cores to assign for parallel 
+#' computations
 #'
 #' @return A numeric matrix where:
 #' \item{Rows}{Correspond to the DNA sequences (named from `dataSeq`).}
@@ -95,11 +98,11 @@ AllScores <- function(PWMs, dataSeq, workers = 4){
 #' \item{Column 2}{The maximum score for the sequence.}
 #' @importFrom seqinr s2c
 get_scores <- function(PWM,dataSeq){
-
+  
   n_seq = nrow(dataSeq)
   Result <-matrix(0,ncol = 2,nrow= n_seq)
   PWM = matrix(as.numeric(as.matrix(PWM)),ncol = 4)
-
+  
   for (s in (1: n_seq)) {
     UPSTREAM = seqinr::s2c(dataSeq[s,2])
     MATRIX<-matrix(0,nrow=4,ncol=length(UPSTREAM))
@@ -107,15 +110,15 @@ get_scores <- function(PWM,dataSeq){
     mC<-which(UPSTREAM=="C")
     mG<-which(UPSTREAM=="G")
     mT<-which(UPSTREAM=="T")
-
+    
     MATRIX[1,mA]<-1
     MATRIX[2,mC]<-1
     MATRIX[3,mG]<-1
     MATRIX[4,mT]<-1
-
+    
     n_col = dim(PWM)[2]
     ScoreMatrix<-matrix(0,ncol = 1, nrow=(length(UPSTREAM)-n_col))
-
+    
     for (i in 1:(dim(MATRIX)[2] - n_col)-1){
       seq = MATRIX[,i:(nrow(PWM))]
       score = sum(diag(PWM %*% seq))
