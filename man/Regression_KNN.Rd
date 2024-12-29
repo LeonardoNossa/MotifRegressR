@@ -4,7 +4,7 @@
 \alias{Regression_KNN}
 \title{K-Nearest Neighbors (KNN) Regression}
 \usage{
-Regression_KNN(Scores, TPMs, Condition)
+Regression_KNN(Scores, TPMs, Condition, params)
 }
 \arguments{
 \item{Scores}{A matrix or data frame of scores to be used as predictors in

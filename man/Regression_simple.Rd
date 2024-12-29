@@ -4,7 +4,7 @@
 \alias{Regression_simple}
 \title{Simple Linear Regression}
 \usage{
-Regression_simple(Scores, TPMs, Condition)
+Regression_simple(Scores, TPMs, Condition, params)
 }
 \arguments{
 \item{Scores}{A data frame or matrix of scores to be used as predictors in

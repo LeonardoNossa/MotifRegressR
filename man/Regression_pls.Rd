@@ -4,7 +4,7 @@
 \alias{Regression_pls}
 \title{Partial Least Squares (PLS) Regression}
 \usage{
-Regression_pls(Scores, TPMs, Condition)
+Regression_pls(Scores, TPMs, Condition, params)
 }
 \arguments{
 \item{Scores}{A matrix or data frame of scores to be used as predictors in

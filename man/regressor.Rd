@@ -4,7 +4,13 @@
 \alias{regressor}
 \title{Regressor}
 \usage{
-regressor(scores, compendium, conditions, regression_type)
+regressor(
+  scores,
+  compendium,
+  conditions,
+  regression_type,
+  regression_params_list
+)
 }
 \arguments{
 \item{scores}{A data frame or matrix of scores (e.g., feature scores or

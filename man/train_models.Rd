@@ -4,7 +4,7 @@
 \alias{train_models}
 \title{Train Regression Models}
 \usage{
-train_models(S, EXPN, conditions, regression = "LM")
+train_models(S, EXPN, conditions, regression, regression_params)
 }
 \arguments{
 \item{S}{A numeric matrix or data frame of scores}

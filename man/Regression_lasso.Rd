@@ -4,7 +4,7 @@
 \alias{Regression_lasso}
 \title{Randomized Lasso Regression}
 \usage{
-Regression_lasso(Scores, TPMs, Condition)
+Regression_lasso(Scores, TPMs, Condition, params)
 }
 \arguments{
 \item{Scores}{A matrix or data frame of scores to be used as predictors in
