@@ -1,20 +1,26 @@
 # Advanced genomics project: MotifRegressR
 
+(aggiungere logo)
 
 ## Background
 This project was developed as part of the Advanced genomics course within the Master's degree in 
-Bioinformatics for Computational Genomics.
+Bioinformatics for Computational Genomics. It consists in an R package and a dedicated shinyR application
+for motif regression.
 
-## Authors
-This project was developed by [Leonardo Nossa](https://github.com/LeonardoNossa), 
-[Federico Camozzi](https://github.com/Federico-Camozzi), [Marco Cominelli](https://github.com/marco-cominelli01), 
-[Riccardo de Sury](https://github.com/riccardodesury), [Teodor Devda](https://github.com/doroteo17), [Laura Mottarlini](),
-[Gabriele Oliveto](https://github.com/Gab-23) and [Elena Sasso](https://github.com/elenasasso).
-
+## Team
+The project was developed by 
+- [Leonardo Nossa](https://github.com/LeonardoNossa),
+- [Gabriele Oliveto](https://github.com/Gab-23),
+- [Marco Cominelli](https://github.com/marco-cominelli01),
+- [Teodor Devda](https://github.com/doroteo17),
+- [Elena Sasso](https://github.com/elenasasso),
+- [Riccardo de Sury](https://github.com/riccardodesury),
+- [Federico Camozzi](https://github.com/Federico-Camozzi), 
+- [Laura Mottarlini]() 
 
 ## Project Overview
-This R package facilitates motif analysis for gene expression studies. It 
-integrates upstream DNA sequence information, gene expression profiles, and 
+This R package facilitates motif analysis for gene expression studies. 
+It integrates upstream DNA sequence information, gene expression profiles, and 
 Position Frequency Matrices (PFMs) to identify regulatory motifs influencing 
 gene expression.
 
@@ -27,14 +33,11 @@ regression analysis to determine the most impactful motifs under different
 experimental conditions. Visualization functions finally help the user in the 
 sense-making step of the analyses.
 
-
-If you want to see some examples you can see the [Vignette.html](Vignette.html) file in the [doc](doc) folder.
-
 ## How to Use This Repository
-If you're interested in running the analysis yourself, please follow the instruction in the [Vignette.html](Vignette.html) 
-to install the package.
-You can find all the scripts in the [R](R) folder and all the informations about it in the [man](man) folder. 
-Please make sure you have R installed.
+
+Instructions on how to install and use the tool are provided in the [Vignette.html](Vignette.html) file in the [doc](doc) folder.
+You can find all the functions' scripts in the [R](R) folder and all the documentation about them in the [man](man) folder. 
+Please make sure R software and all depdendencies are correctly installed before installing the package.
 
 
 ## Contact
