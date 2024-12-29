@@ -11,6 +11,9 @@
 #' "T". The names of the vector will be used as row names in the output.
 #' @param workers integer, the number of cores to assign for parallel 
 #' computations
+#' @param both logical, indicating whether to compute scores for both DNA strands.
+#' If TRUE, the function computes the scores for both strands and returns the 
+#' maximum of the two. If FALSE, it computes scores only for the forward strand.
 #'
 #' @return A numeric matrix where:
 #' \item{Rows}{Correspond to the DNA sequences (named from `dataSeq`).}
