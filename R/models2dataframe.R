@@ -6,7 +6,7 @@
 #'
 #' @param regression_list A list of regression models. The names of the list
 #' elements should correspond to the model types ("Randomized_lasso", "PLS",
-#' "SVM", "LM", "KNN").
+#' "SVM", "LM", "KNN","RF).
 #' @param k An integer specifying the number of top features to include for
 #' unpacking. Default is 5.
 #' @param alpha A numeric value specifying the significance threshold for
@@ -75,6 +75,15 @@ models2dataframe <- function(regression_list, k = 5, alpha = NULL){
                          FUN = function(condition){
                            KNN_sublist <- models_list[condition]
                            output_df <- unpack_KNN(KNN_sublist, k)})
+
+      final_df <- do.call(rbind,out_list)
+      output[[model_name]] <- final_df
+
+    } else if(model_name == "RF"){
+      out_list <- lapply(X = seq_along(1:length(models_list)),
+                         FUN = function(condition){
+                           RF_sublist <- models_list[condition]
+                           output_df <- unpack_RF(RF_sublist, k)})
 
       final_df <- do.call(rbind,out_list)
       output[[model_name]] <- final_df
@@ -282,4 +291,35 @@ unpack_KNN <- function(KNN_sublist, k){
                           coef = rfe_importance$Overall[1:min(k,nrow(rfe_importance))])
   return(output_df)
 }
+
+
+#' Unpack RF
+#'
+#' This function extracts the top `k` most important motifs from a
+#' trained RF model based on their feature importance.
+#'
+#' @param RF_sublist A list containing a single RF model (object of
+#' class `randomForest`).
+#' @param k An integer specifying the number of top features to extract.
+#'
+#' @return A data frame with the following columns:
+#' \itemize{
+#'   \item `motifs`: The names of the top motifs.
+#'   \item `conditions`: The name of the condition corresponding to the motifs.
+#'   \item `coef`: The feature importance values for the motifs.
+#' }
+unpack_RF <- function(RF_sublist, k){
+  model_rf <- RF_sublist[[1]]
+  model_rf_importance <- sort(model_rf$importance,
+                              decreasing = TRUE)
+  motifs <- rownames(model_rf$importance)[order(model_rf$importance,
+                                                decreasing = TRUE)]
+  output_df <- data.frame(motifs =
+                            motifs[1:min(k,length(model_rf_importance))],
+                          conditions = rep(x = names(RF_sublist),
+                                           times = min(k,length(model_rf_importance))),
+                          coef = model_rf_importance[1:min(k,length(model_rf_importance))])
+  return(output_df)
+}
+
 

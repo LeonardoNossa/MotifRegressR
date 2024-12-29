@@ -118,11 +118,16 @@ Regression_lasso <- function(Scores, TPMs, Condition, params){
     regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition])
   } else {
     if (params["cutoff"] <= 0.5){
-      message("'cutoff' value is <= 0.5, setting it to 0.51 to avoid errors!")
+      warning("'cutoff' value is <= 0.5, setting it to 0.51 to avoid errors!")
+      cutoff <- 0.51
+    } else if (params["cutoff"] > 1) {
+      warning("'cutoff' value is > 1, setting it to 1 to avoid errors!")
+      cutoff <- 1
+    } else {
+      cutoff <- params["cutoff"]
     }
-    cutoff <- ifelse(params["cutoff"] <= 0.5, 0.51, params["cutoff"])
-    regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], cutoff = cutoff)
   }
+  regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], cutoff = cutoff)
   return(regr_mona)
 }
 
@@ -208,11 +213,12 @@ Regression_svm <- function(Scores, TPMs, Condition, params){
   if (all(is.na(params))) {
     regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition])
   } else {
-
     if (!params["kernel"]%in%accepted_kernels) {
-      message("'kernel' NOT supported, defaulting to radial kernel")
+      warning("'kernel' NOT supported, defaulting to radial kernel")
+      kernel <- "radial"
+    } else {
+      kernel <- params["kernel"]
     }
-    kernel <- ifelse(params["kernel"] %in% accepted_kernels, params["kernel"], "radial")
     regr_svm <- e1071::svm(as.matrix(Scores), TPMs[,Condition], kernel = kernel)
   }
   return(regr_svm)
@@ -238,38 +244,52 @@ Regression_svm <- function(Scores, TPMs, Condition, params){
 #' to evaluate model performance. The computation is parallelized using
 #' \code{doParallel} to improve efficiency.
 #'
-#' @importFrom parallel makeCluster stopCluster
+#' @importFrom parallel makeCluster stopCluster detectCores
 #' @importFrom doParallel registerDoParallel
 #' @importFrom caret rfeControl caretFuncs rfe
-Regression_KNN <- function(Scores, TPMs, Condition, params) {
+Regression_KNN <- function(Scores, TPMs, Condition, params){
 
   suppressPackageStartupMessages(library(caret))
 
   if (all(is.na(params))) {
-    num_cores <- 10
+    num_cores <- parallel::detectCores()
     cv <- 3
 
   } else if ((is.na(params["num_cores"])) && (!is.na(params["cv"]))) {
-
-    num_cores <- 10
-    if (params["cv"] <= 1) {
-      message("'cv' value is <= 1, setting it to 2 to avoid errors!")
+    num_cores <- parallel::detectCores()
+    if (params["cv"] <= 1){
+      warning("'cv' value is <= 1, setting it to 2 to avoid errors!")
+      cv <- 2
+    } else if (params["cv"] > nrow(Scores)){
+      warning("'cv' value is > [number of data points], setting it to [number of data points] to avoid errors! [LOOCV]")
+      cv <- nrow(Scores)
     }
-    cv <- ifelse(params["cv"] <= 1, 2, params["cv"])
 
   } else if ((is.na(params["cv"])) && (!is.na(params["num_cores"]))) {
-
-    num_cores <- params["num_cores"]
     cv <- 3
+    if (params["num_cores"] < 1){
+      warning("'num_cores' value is < 1, setting it to 1 to avoid errors!")
+      num_cores <- 1
+    } else if (params["num_cores"] > parallel::detectCores()){
+      warning("'num_cores' value is > [number of available cores], setting it to [number of available cores] to avoid errors!")
+      num_cores <- parallel::detectCores()
+    }
 
   } else {
-
-    num_cores <- params["num_cores"]
-    if (params["cv"] <= 1) {
-      message("'cv' value is <= 1, setting it to 2 to avoid errors!")
+    if (params["cv"] <= 1){
+      warning("'cv' value is <= 1, setting it to 2 to avoid errors!")
+      cv <- 2
+    } else if (params["cv"] > nrow(Scores)){
+      warning("'cv' value is > [number of data points], setting it to [number of data points] to avoid errors! [LOOCV]")
+      cv <- nrow(Scores)
     }
-    cv <- ifelse(params["cv"] <= 1, 2, params["cv"])
-
+    if (params["num_cores"] < 1){
+      warning("'num_cores' value is < 1, setting it to 1 to avoid errors!")
+      num_cores <- 1
+    } else if (params["num_cores"] > parallel::detectCores()){
+      warning("'num_cores' value is > [number of available cores], setting it to [number of available cores] to avoid errors!")
+      num_cores <- parallel::detectCores()
+    }
   }
 
   cl <- parallel::makeCluster(num_cores)
@@ -293,6 +313,71 @@ Regression_KNN <- function(Scores, TPMs, Condition, params) {
   suppressWarnings(parallel::stopCluster(cl))
   return(rfe_results)
 }
+
+#' Random Forest Regression
+#'
+#' This function performs Random Forest regression using the
+#' \code{randomForest} function from the \code{randomForest} package.
+#'
+#' @param Scores A matrix or data frame of scores to be used as predictors in
+#' the Random Forest regression. This is converted to a matrix internally.
+#' @param TPMs A data frame or matrix of TPM (Transcripts Per Million) values.
+#' Columns correspond to different conditions or samples.
+#' @param Condition A character string specifying the column name in \code{TPMs}
+#' corresponding to the condition to be analyzed.
+#'
+#' @return An object of class \code{randomForest} returned by the
+#' \code{randomForest} function, representing the fitted Random Forest
+#' regression model.
+#'
+#' @importFrom randomForest randomForest
+Regression_RF <- function(Scores, TPMs, Condition, params) {
+
+  if (all(is.na(params))) {
+    ntree <- 500
+    mtry <- floor(sqrt(ncol(Scores)))
+
+  } else if ((is.na(params["ntree"])) && (!is.na(params["mtry"]))) {
+    ntree <- 500
+    if (params["mtry"] < 1) {
+      warning("'mtry' < 1, setting it to 1 to avoid errors!")
+      mtry <- 1
+    } else if (params["mtry"] > ncol(Scores)){
+      warning("'mtry' > [number of features], setting it to [number of features] to avoid errors!")
+      mtry <- ncol(Scores)
+    }
+
+  } else if ((is.na(params["mtry"])) && (!is.na(params["ntree"]))) {
+    mtry <- floor(sqrt(ncol(Scores)))
+    if (params["ntree"] < 1){
+      warning("'ntree' < 1, setting it to 1 to avoid errors!")
+      ntree <- 1
+    }
+
+  } else {
+    if (params["ntree"] < 1){
+      warning("'ntree' < 1, setting it to 1 to avoid errors!")
+      ntree <- 1
+    }
+    if (params["mtry"] < 1) {
+      warning("'mtry' < 1, setting it to 1 to avoid errors!")
+      mtry <- 1
+    } else if (params["mtry"] > ncol(Scores)){
+      warning("'mtry' > [number of features], setting it to [number of features] to avoid errors!")
+      mtry <- ncol(Scores)
+    }
+  }
+
+  Scores <- as.matrix(Scores)
+  EXP <- TPMs[, Condition]
+  mtry <- ifelse(is.null(mtry), floor(sqrt(ncol(Scores))), mtry)
+  model <- randomForest::randomForest(x = Scores,
+                                      y = EXP,
+                                      ntree = ntree,
+                                      mtry = mtry)
+  return(model)
+}
+
 
 #' Retrieve Regression Parameter List
 #'
