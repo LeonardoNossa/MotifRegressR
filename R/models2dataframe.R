@@ -283,8 +283,8 @@ unpack_svm <- function(svm_sublist, k){
 #'   \item `coef`: The feature importance values for the motifs.
 #' }
 unpack_KNN <- function(KNN_sublist, k){
-  rfe_results <- KNN_sublist[[1]]
-  rfe_importance <- caret::varImp(rfe_results, scale = TRUE)
+  rfe_results <- KNN_sublist[[1]]$fit
+  rfe_importance <- caret::varImp(rfe_results, scale = FALSE)$importance
 
   output_df <- data.frame(motifs = rownames(rfe_importance)[1:min(k,nrow(rfe_importance))],
                           conditions = rep(x = names(KNN_sublist), times = min(k,nrow(rfe_importance))),
