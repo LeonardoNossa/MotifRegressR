@@ -233,5 +233,14 @@ plot_dimensionality_reduction <- function(compendium, metadata = NULL, color_by 
   }
 ");
 
+  fig <- fig %>% layout(
+    legend = list(
+      x = -0.3,
+      y = -0.7,
+      xanchor = "down"
+    ),
+    margin = list(l = 50, r = 150, b = 50, t = 50)
+  )
+
   return(fig)
 }
