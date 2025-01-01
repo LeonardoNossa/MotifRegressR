@@ -128,7 +128,7 @@ train_models <- function(S, EXPN, conditions, regression,regression_params) {
 #'
 #' @importFrom monaLisa randLassoStabSel
 Regression_lasso <- function(Scores, TPMs, Condition, params){
-  
+
   cutoff <- params["cutoff"]
   if (all(is.na(params))) {
     regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition])
@@ -140,9 +140,8 @@ Regression_lasso <- function(Scores, TPMs, Condition, params){
       warning("'cutoff' value is > 1, setting it to 1 to avoid errors!")
       cutoff <- 1
     }
+  regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], cutoff = cutoff)
   }
-  regr_mona <- monaLisa::randLassoStabSel(as.matrix(Scores), TPMs[,Condition], 
-                                          cutoff = cutoff)
   return(regr_mona)
 }
 
