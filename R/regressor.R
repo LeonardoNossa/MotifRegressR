@@ -59,6 +59,7 @@ regressor <- function(scores, compendium, conditions, regression_type,
 #'   \item `"SVM"` for Support Vector Machine regression.
 #'   \item `"LM"` for simple linear regression.
 #'   \item `"KNN"` for KNN regression.
+#'   \item `"RF"` for Random forest regression.
 #' }
 #' @param regression_params A list of parameters required for the selected 
 #' regression model.
