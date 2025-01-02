@@ -60,6 +60,7 @@ regressor <- function(scores, compendium, conditions, regression_type,
 #'   \item `"LM"` for simple linear regression.
 #'   \item `"KNN"` for KNN regression.
 #'   \item `"RF"` for Random forest regression.
+#'   \item `"O2PLS"` for O2PLS regression.
 #' }
 #' @param regression_params A list of parameters required for the selected 
 #' regression model.
@@ -78,12 +79,13 @@ train_models <- function(S, EXPN, conditions, regression,regression_params) {
     "LM" = Regression_simple,
     "KNN" = Regression_KNN,
     "RF" = Regression_RF,
+    "O2PLS" = Regression_O2PLS,
     NULL
   )
   
   if (is.null(regression_func)) {
     stop("Please, choose among the following options:
-         \n- Randomized_lasso\n- PLS\n- SVM\n- LM\n- KNN\n- RF")
+         \n- Randomized_lasso\n- PLS\n- SVM\n- LM\n- KNN\n- RF\n- O2PLS")
   }
   
   if (is.character(conditions)){
@@ -432,6 +434,36 @@ Regression_RF <- function(Scores, TPMs, Condition, params) {
   return(model)
 }
 
+#' O2PLS Regression
+#'
+#' This function performs O2PLS regression using the
+#' \code{o2m} function from the \code{OmicsPLS} package.
+#'
+#' @param Scores A matrix or data frame of scores to be used as predictors in
+#' the PLS regression. This is internally converted to a matrix.
+#' @param TPMs A data frame or matrix of TPM (Transcripts Per Million) values.
+#' Columns correspond to different conditions or samples.
+#' @param Condition A character string specifying the column name in \code{TPMs}
+#' corresponding to the condition to be analyzed.
+#' @param params A named vector containing optional parameters
+#' @return A list representing the O2PLS regression
+#' @importFrom OmicsPLS o2m
+Regression_O2PLS <- function(Scores, TPMs, Condition, params) {
+
+  if (all(is.na(params))) {
+
+    y <- as.matrix(TPMs[,Condition])
+    y <- scale(y,center = TRUE)
+    rownames(y) <- rownames(Scores)
+
+    x <- as.matrix(Scores)
+    x <- scale(x,center = TRUE)
+
+    model <- OmicsPLS::o2m(X = x, Y = y, n = 1, nx = 0, ny = 0)
+  }
+  return(model)
+}
+
 
 #' Retrieve Regression Parameter List
 #'
@@ -465,7 +497,8 @@ Regression_RF <- function(Scores, TPMs, Condition, params) {
 #'   \item \code{KNN}: A vector containing \code{num_cores} and \code{cv} 
 #'   parameters.
 #'   \item \code{SVM}: A vector containing the \code{kernel} parameter.
-#'   \item \code{RF}: A vector containing \code{ntree} and \code{mtry} 
+#'   \item \code{RF}: A vector containing \code{ntree} and \code{mtry}
+#'   \item \code{O2PLS}: `NA` (placeholder for O2PLS parameters).
 #'   parameters.
 #' }
 #'
@@ -476,26 +509,28 @@ retrieve_params_list <- function(Regression_lasso_cutoff = NA,
                                  Regression_KNN_cv = NA,
                                  Regression_RF_ntree = NA,
                                  Regression_RF_mtry = NA){
-  
+
+  o2pls <- NA
   pls <- NA
   simple <- NA
-  
+
   lasso <- c(cutoff = Regression_lasso_cutoff)
   svm <- c(kernel = Regression_svm_kernel)
-  
+
   knn <- c(num_cores = Regression_KNN_num_cores,
            cv = Regression_KNN_cv)
-  
+
   rf <- c(ntree = Regression_RF_ntree,
           mtry = Regression_RF_mtry)
-  
+
   params_list <- list(Randomized_lasso = lasso,
                       PLS = pls,
                       LM = simple,
                       KNN = knn,
                       SVM = svm,
-                      RF = rf)
-  
+                      RF = rf,
+                      O2PLS = o2pls)
+
   return(params_list)
 }
 
