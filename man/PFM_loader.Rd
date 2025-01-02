@@ -20,5 +20,7 @@ PFM of a motif. Each PFM contains the nucleotide frequencies
 ("A", "C", "G", "T") at each position.
 }
 \description{
-PFM Loader
+This function allows users to load PFMs either from a local file in MEME
+format or by specifying a taxonomy ID to retrieve motifs from an online
+database.
 }

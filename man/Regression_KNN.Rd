@@ -15,18 +15,25 @@ Columns correspond to different conditions or samples.}
 
 \item{Condition}{A character string specifying the column name in \code{TPMs}
 corresponding to the condition to be analyzed.}
+
+\item{params}{A named list or vector containing parameters for the regression
+model:
+\describe{
+\item{\code{num_cores}}{(Optional) Number of CPU cores to use for
+parallelization. Default is the total number of available cores.
+If a value greater than the available cores is provided, it will be
+adjusted accordingly.}
+\item{\code{cv}}{(Optional) Number of cross-validation folds. Default is 3.
+If a value greater than the number of observations is provided, it will
+default to Leave-One-Out Cross-Validation (LOOCV).}
+}}
 }
 \value{
-An object of class \code{RFE} representing the fitted KNN regression model.
+An object of class \code{RFE} representing the fitted KNN regression
+model.
 }
 \description{
 This function performs KNN regression using the \code{caret} package.
 The best model is evaluated using Recursive Feature Elimination (RFE).
 Computation of the best model is parallelized using \code{doParallel}.
-}
-\details{
-This function uses Recursive Feature Elimination (RFE) to select
-the best set of predictors for KNN regression. Cross-validation is employed
-to evaluate model performance. The computation is parallelized using
-\code{doParallel} to improve efficiency.
 }

@@ -9,7 +9,7 @@ models2dataframe(regression_list, k = 5, alpha = NULL)
 \arguments{
 \item{regression_list}{A list of regression models. The names of the list
 elements should correspond to the model types ("Randomized_lasso", "PLS",
-"SVM", "LM", "KNN","RF).}
+"SVM", "LM", "KNN","RF","O2PLS").}
 
 \item{k}{An integer specifying the number of top features to include for
 unpacking. Default is 5.}

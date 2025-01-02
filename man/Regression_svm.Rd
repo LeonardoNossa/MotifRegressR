@@ -15,6 +15,12 @@ Columns correspond to different conditions or samples.}
 
 \item{Condition}{A character string specifying the column name in \code{TPMs}
 corresponding to the condition to be analyzed.}
+
+\item{params}{A named list or vector containing parameters for the regression
+model.
+The parameter \code{kernel} specifies the kernel function to be used in the
+SVM. Supported kernels are: "linear", "radial", "polynomial", and "sigmoid".
+If not specified, the default is "radial".}
 }
 \value{
 An object of class \code{svm} returned by the \code{svm} function,

@@ -14,32 +14,45 @@ retrieve_params_list(
 )
 }
 \arguments{
-\item{Regression_lasso_cutoff}{Numeric. Cutoff value for Randomized Lasso regression. Defaults to \code{NA}.}
+\item{Regression_lasso_cutoff}{Numeric. Cutoff value for Randomized Lasso
+regression. Defaults to \code{NA}.}
 
-\item{Regression_svm_kernel}{Character. Specifies the kernel type for SVM (e.g., "linear", "radial"). Defaults to \code{NA}.}
+\item{Regression_svm_kernel}{Character. Specifies the kernel type for SVM
+(e.g., "linear", "radial"). Defaults to \code{NA}.}
 
-\item{Regression_KNN_num_cores}{Integer. Number of cores to use for parallel processing in KNN. Defaults to \code{NA}.}
+\item{Regression_KNN_num_cores}{Integer. Number of cores to use for parallel
+processing in KNN. Defaults to \code{NA}.}
 
-\item{Regression_KNN_cv}{Integer. Number of cross-validation folds for KNN. Defaults to \code{NA}.}
+\item{Regression_KNN_cv}{Integer. Number of cross-validation folds for KNN.
+Defaults to \code{NA}.}
 
-\item{Regression_RF_ntree}{Integer. Number of trees to grow in the Random Forest. Defaults to \code{NA}.}
+\item{Regression_RF_ntree}{Integer. Number of trees to grow in the Random
+Forest. Defaults to \code{NA}.}
 
-\item{Regression_RF_mtry}{Integer. Number of variables randomly sampled as candidates at each split in Random Forest. Defaults to \code{NA}.}
+\item{Regression_RF_mtry}{Integer. Number of variables randomly sampled as
+candidates at each split in Random Forest. Defaults to \code{NA}.}
 }
 \value{
-A named list of vectors, where each vector contains parameters specific to one regression model:
+A named list of vectors, where each vector contains parameters
+specific to one regression model:
 \itemize{
-\item \code{Randomized_lasso}: A vector containing the \code{cutoff} parameter.
+\item \code{Randomized_lasso}: A vector containing the \code{cutoff}
+parameter.
 \item \code{PLS}: \code{NA} (placeholder for Partial Least Squares parameters).
 \item \code{LM}: \code{NA} (placeholder for Linear Model parameters).
-\item \code{KNN}: A vector containing \code{num_cores} and \code{cv} parameters.
+\item \code{KNN}: A vector containing \code{num_cores} and \code{cv}
+parameters.
 \item \code{SVM}: A vector containing the \code{kernel} parameter.
-\item \code{RF}: A vector containing \code{ntree} and \code{mtry} parameters.
+\item \code{RF}: A vector containing \code{ntree} and \code{mtry}
+\item \code{O2PLS}: \code{NA} (placeholder for O2PLS parameters).
+parameters.
 }
 }
 \description{
-This function generates a named list containing the parameters for various regression models,
-including Randomized Lasso, PLS (Partial Least Squares), Linear Model (LM), K-Nearest Neighbors (KNN),
-Support Vector Machines (SVM), and Random Forest (RF).
-Users can supply specific values for each regression method's parameters, or leave them as \code{NA} to use defaults.
+This function generates a named list containing the parameters for various
+regression models, including Randomized Lasso, PLS (Partial Least Squares),
+Linear Model (LM), K-Nearest Neighbors (KNN), Support Vector Machines (SVM),
+and Random Forest (RF).
+Users can supply specific values for each regression method's parameters,
+or leave them as \code{NA} to use defaults.
 }

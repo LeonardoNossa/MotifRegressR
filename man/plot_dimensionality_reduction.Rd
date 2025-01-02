@@ -18,10 +18,12 @@ and columns represent samples.}
 \item{metadata}{A data frame containing metadata for the samples,
 where each row corresponds to a sample in \code{compendium},
 if metadata for that sample are available.
-If NULL tooltips will just display the ID of the sample contained in \code{compendium}}
+If NULL tooltips will just display the ID of the sample contained in
+\code{compendium}}
 
 \item{color_by}{A string specifying the column name in \code{metadata}
-to be used for coloring points in the plot. MUST be NULL if \code{metadata} is NULL}
+to be used for coloring points in the plot. MUST be NULL if \code{metadata} is
+NULL}
 
 \item{method}{A string specifying the dimensionality reduction method.
 Options are "PCA", "MDS", "t-SNE", or "UMAP". Defaults to "PCA".}
@@ -38,9 +40,13 @@ It supports multiple methods, including PCA, MDS, t-SNE, and UMAP.
 }
 \details{
 \itemize{
-\item PCA (Principal Component Analysis): Computes principal components and explained variance.
-\item MDS (Multidimensional Scaling): Uses pairwise distances between samples for dimensionality reduction.
-\item t-SNE (t-Distributed Stochastic Neighbor Embedding): Optimizes a similarity measure for high-dimensional data visualization.
-\item UMAP (Uniform Manifold Approximation and Projection): Aims to preserve local and global structure of data.
+\item PCA (Principal Component Analysis): Computes principal components and
+explained variance.
+\item MDS (Multidimensional Scaling): Uses pairwise distances between samples for
+dimensionality reduction.
+\item t-SNE (t-Distributed Stochastic Neighbor Embedding): Optimizes a similarity
+measure for high-dimensional data visualization.
+\item UMAP (Uniform Manifold Approximation and Projection): Aims to preserve
+local and global structure of data.
 }
 }

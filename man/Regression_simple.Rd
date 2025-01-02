@@ -15,6 +15,9 @@ Columns correspond to different conditions or samples.}
 
 \item{Condition}{A character string specifying the column name in \code{TPMs}
 corresponding to the condition to be analyzed.}
+
+\item{params}{A named list or vector containing parameters for the regression
+model.}
 }
 \value{
 An object of class \code{lm} returned by the \code{lm} function,

@@ -15,6 +15,10 @@ Columns correspond to different conditions or samples.}
 
 \item{Condition}{A character string specifying the column name in \code{TPMs}
 corresponding to the condition to be analyzed.}
+
+\item{params}{A named list or vector containing parameters for the regression
+model. The parameter \code{cutoff} defines the threshold for stability selection.
+If not provided, a default value is used.}
 }
 \value{
 An object returned by the \code{randLassoStabSel} function,

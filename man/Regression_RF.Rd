@@ -15,6 +15,19 @@ Columns correspond to different conditions or samples.}
 
 \item{Condition}{A character string specifying the column name in \code{TPMs}
 corresponding to the condition to be analyzed.}
+
+\item{params}{A named list or vector containing parameters for the Random
+Forest model:
+\describe{
+\item{\code{ntree}}{(Optional) Number of trees to grow in the Random
+Forest. Default is 500. If a value less than 1 is provided, it will be set
+to 1.}
+\item{\code{mtry}}{(Optional) Number of variables randomly sampled as
+candidates at each split. Default is \code{sqrt(number of predictors)}.
+If a value less than 1 is provided, it will be set to 1. If a value greater
+than the number of predictors is provided, it will be adjusted to match
+the number of predictors.}
+}}
 }
 \value{
 An object of class \code{randomForest} returned by the

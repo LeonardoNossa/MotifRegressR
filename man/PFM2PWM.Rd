@@ -18,7 +18,8 @@ The default is \code{c(0.25, 0.25, 0.25, 0.25)}. Values should sum to 1.}
 \value{
 A named list of data frames, where each data frame corresponds to a
 Position Weight Matrix (PWM) for a motif. Each PWM contains log2-transformed
-weights relative to the background probabilities.
+weights relative to the background probabilities. The frequencies are
+adjusted with a small constant (0.01) to avoid log(0) errors.
 }
 \description{
 This function takes a list of Position Frequency Matrices (PFMs) and converts

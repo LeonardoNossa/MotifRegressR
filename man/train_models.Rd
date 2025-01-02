@@ -22,7 +22,15 @@ Options are:
 \item \code{"SVM"} for Support Vector Machine regression.
 \item \code{"LM"} for simple linear regression.
 \item \code{"KNN"} for KNN regression.
+\item \code{"RF"} for Random forest regression.
+\item \code{"O2PLS"} for O2PLS regression.
 }}
+
+\item{regression_params}{A list of parameters required for the selected
+regression model.
+The structure and content of this list depend on the chosen regression method
+and should be specified according to the needs of the individual regression
+function.}
 }
 \value{
 A named list where each element corresponds to a regression model for

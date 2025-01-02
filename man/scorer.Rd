@@ -10,11 +10,16 @@ scorer(PWMs, dataSeq, workers = 4, both = TRUE)
 \item{PWMs}{A list of Position Weight Matrices (PWMs). Each PWM in the list
 should be a numeric matrix with 4 rows (corresponding to A, C, G, T).}
 
-\item{dataSeq}{A matrix containing chromosomes names and the DNA sequences to be
-scored. Each sequence must consist of the characters "A", "C", "G", and "T".
-The names of the vector will be used as row names in the output.}
+\item{dataSeq}{A matrix containing chromosomes names and the DNA sequences to
+be scored. Each sequence must consist of the characters "A", "C", "G", and
+"T". The names of the vector will be used as row names in the output.}
 
-\item{workers}{integer, the number of cores to assign for parallel computations}
+\item{workers}{integer, the number of cores to assign for parallel
+computations}
+
+\item{both}{logical, indicating whether to compute scores for both DNA strands.
+If TRUE, the function computes the scores for both strands and returns the
+maximum of the two. If FALSE, it computes scores only for the forward strand.}
 }
 \value{
 A numeric matrix where:
