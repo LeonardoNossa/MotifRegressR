@@ -6,7 +6,7 @@
 #'
 #' @param regression_list A list of regression models. The names of the list
 #' elements should correspond to the model types ("Randomized_lasso", "PLS",
-#' "SVM", "LM", "KNN","RF).
+#' "SVM", "LM", "KNN","RF","O2PLS").
 #' @param k An integer specifying the number of top features to include for
 #' unpacking. Default is 5.
 #' @param alpha A numeric value specifying the significance threshold for
@@ -84,6 +84,15 @@ models2dataframe <- function(regression_list, k = 5, alpha = NULL){
                          FUN = function(condition){
                            RF_sublist <- models_list[condition]
                            output_df <- unpack_RF(RF_sublist, k)})
+
+      final_df <- do.call(rbind,out_list)
+      output[[model_name]] <- final_df
+
+    } else if(model_name == "O2PLS"){
+      out_list <- lapply(X = seq_along(1:length(models_list)),
+                         FUN = function(condition){
+                           o2pls_sublist <- models_list[condition]
+                           output_df <- unpack_O2PLS(o2pls_sublist, k)})
 
       final_df <- do.call(rbind,out_list)
       output[[model_name]] <- final_df
@@ -319,6 +328,44 @@ unpack_RF <- function(RF_sublist, k){
                           conditions = rep(x = names(RF_sublist),
                                            times = min(k,length(model_rf_importance))),
                           coef = model_rf_importance[1:min(k,length(model_rf_importance))])
+  return(output_df)
+}
+
+#' Unpack O2PLS
+#'
+#' This function extracts the top `k` motifs from a O2PLS regression
+#' model based on their regression coefficients.
+#'
+#' @param o2pls_sublist A list containing a single O2PLS regression model.
+#' The model must include coefficients for motifs.
+#' @param k An integer specifying the number of top motifs to extract.
+#'
+#' @return A data frame with the following columns:
+#' \itemize{
+#'   \item `motifs`: The names of the top motifs.
+#'   \item `conditions`: The name of the condition corresponding to the motifs.
+#'   \item `coef`: The regression coefficients of the motifs.
+#' }
+unpack_O2PLS <- function(o2pls_sublist, k) {
+  o2pls_model <- o2pls_sublist[[1]]
+  coefficients <- o2pls_model$W.
+  motif_names <- rownames(coefficients)
+
+  condition_name <- rep(x = names(o2pls_sublist),
+                        times = min(k, length(coefficients)))
+
+  ranking_idxs <- order(abs(coefficients), decreasing = TRUE)
+  coefficients <- coefficients[ranking_idxs]
+  motif_names <- motif_names[ranking_idxs]
+
+  top_k <- coefficients[1:min(k, length(coefficients))]
+  top_k_names <- motif_names[1:min(k, length(coefficients))]
+
+  output_df <- data.frame(motifs = top_k_names,
+                          conditions = condition_name,
+                          coef = top_k)
+  rownames(output_df) <- seq_along(1:nrow(output_df))
+
   return(output_df)
 }
 
