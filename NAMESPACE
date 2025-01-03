@@ -3,6 +3,7 @@
 export(PFM2PWM)
 export(PFM_loader)
 export(compendium_loader)
+export(consensus_fisher_test)
 export(consensus_motifs)
 export(consensus_motifs_heatmap)
 export(filter)
