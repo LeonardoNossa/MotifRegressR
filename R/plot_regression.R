@@ -402,3 +402,73 @@ plot_RANDLASSO <- function(RANDLASSO_model){
               selection_prob = selection_prob))
 
 }
+
+
+
+#' @title Plot O2PLS Model Metrics and Feature Importance
+#' @description Generates plots and data summaries for
+#' O2PLS model metrics (motifs weights and correlation between joint X scores
+#' and joint Y scores).
+#' @param O2PLS_model A trained O2PLS model object.
+#' @return A list containing motifs weights and ggplot objects
+#' for such weights and correlation between joint X scores and joint Y scores.
+#' @importFrom ggplot2 ggplot aes geom_point labs theme_minimal element_text
+#' @importFrom stats reorder
+#' @export
+plot_O2PLS <- function(O2PLS_model) {
+
+  output <- list()
+
+  joint_X_loadings_df <- data.frame(
+    Motifs = rownames(O2PLS_model$W.),
+    Loadings = O2PLS_model$W.[, 1]
+  )
+
+  joint_X_loadings_df <- joint_X_loadings_df[order(joint_X_loadings_df$Loadings,
+                                                   decreasing = TRUE), ]
+
+  joint_X_loadings_dotchart <- ggplot2::ggplot(joint_X_loadings_df,
+                                               ggplot2::aes(x = Loadings,
+                                                            y = stats::reorder(Motifs, Loadings))) +
+    ggplot2::geom_point(color = "blue", size = 3) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(
+      title = "Dotchart Joint X Loadings",
+      x = "Loadings",
+      y = "Motifs"
+    ) +
+    ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5, size = 18),
+                   axis.text.y = ggplot2::element_text(size = 8),
+                   axis.title = ggplot2::element_text(size = 16, vjust = 1),
+                   axis.title.x = ggplot2::element_text(size = 16),
+                   axis.title.y = ggplot2::element_text(size = 16))
+
+
+  output[["joint_X_loadings"]] <- O2PLS_model$W.
+  output[["joint_X_loadings_dotchart"]] <- joint_X_loadings_dotchart
+
+
+  scatter_df <- data.frame(
+    Joint_X_Scores = O2PLS_model$Tt[, 1],
+    Joint_Y_Scores = O2PLS_model$U[, 1]
+  )
+
+  scatterplot_joint_scores <- ggplot2::ggplot(scatter_df, ggplot2::aes(x = Joint_X_Scores, y = Joint_Y_Scores)) +
+    ggplot2::geom_point(color = "darkgreen", size = 3, alpha = 0.7) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(
+      title = "Scatterplot Joint X Scores vs Joint Y Scores",
+      x = "Joint X Scores",
+      y = "Joint Y Scores"
+    ) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold", size = 18),
+      axis.title = ggplot2::element_text(size = 16),
+      axis.text = ggplot2::element_text(size = 10)
+    )
+
+
+  output[["scatterplot_joint_scores"]] <- scatterplot_joint_scores
+  return(output)
+}
+
