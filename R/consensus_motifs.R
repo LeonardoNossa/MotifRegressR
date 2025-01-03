@@ -55,6 +55,7 @@ consensus_motifs <- function(df_list, by_regressor = TRUE) {
   return(output)
 }
 
+
 #' Heatmap of Consensus Motif Inclusivity
 #'
 #' This function creates a heatmap to visualize the inclusivity of motifs
@@ -129,6 +130,56 @@ consensus_motifs_heatmap <- function(consensus_output) {
     column_title_gp = gpar(fontsize = 12, fontface = "bold")
   )
 }
+
+
+#' Consensus Fisher Test
+#'
+#' This function performs a Fisher's exact test
+#' on motif frequencies across multiple conditions.
+#' The input is a consensus data.frame,
+#' which contains the motif frequencies for each condition.
+#'
+#' @param consensus A list where each element is a named vector
+#' representing motif frequencies for different conditions.
+#' @param num_of_regressions The total number of regressions
+#' or occurrences to normalize motif frequencies.
+#' @param alpha Significance level for the test, default is 0.05.
+#'
+#' @return A Fisher's test result object
+#' containing p-values and test statistics.
+#' @export
+consensus_fisher_test <- function(consensus,
+                                  num_of_regressions,
+                                  alpha = 0.05){
+
+  all_data <- lapply(names(consensus), function(condition) {
+    data.frame(
+      Condition = condition,
+      Motif = names(consensus[[condition]]),
+      Frequency = unname(consensus[[condition]])
+    )
+  })
+
+  long_df <- do.call(rbind, all_data)
+  long_df$Condition <- factor(long_df$Condition, levels = unique(long_df$Condition))
+  long_df$Motif <- factor(long_df$Motif, levels = unique(long_df$Motif))
+
+  matrix <- reshape2::acast(long_df, Motif ~ Condition, value.var = "Frequency", fill = 0)
+  matrix <- matrix / 100 * num_of_regressions
+
+  res <- fisher.test(matrix, simulate.p.value = TRUE, B = 10000)
+  pvalue <- round(res$p.value,digits = 4)
+
+  if (pvalue < alpha){
+    msg <- paste0("p-value ", "(", pvalue, ")", " < than \u03B1 ", "(", alpha, ")", " [REJECT H0]")
+    message(msg)
+  } else {
+    msg <- paste0("p-value ", "(", pvalue, ")", " >= than \u03B1 ", "(", alpha, ")", " [FAIL TO REJECT H0]")
+    message(msg)
+  }
+  return(res)
+}
+
 
 #' Retrieve the Type of a Regression Model
 #'
