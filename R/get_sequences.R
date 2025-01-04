@@ -8,8 +8,9 @@
 #' features and regions.
 #' @param fasta A string specifying the path to the FASTA file containing the
 #' DNA sequences.
-#' @param is_circular A logical value indicating whether the chromosomes are
-#' circular.
+#' @param species A character, specifying the type of organism to consider.
+#' Can either be "Bacteria" (default), "C. elegans", "D. melanogaster" or
+#' "S. cerevisiae".
 #' @param upstream An integer specifying the number of base pairs to include
 #' upstream of each gene. Default is 300.
 #'
@@ -18,7 +19,9 @@
 #' \item{Sequence}{The DNA sequence for each gene, extracted from the specified
 #' region in the FASTA file.}
 #' @export
-get_sequences <- function(gff, fasta, is_circular, upstream = 300){
+get_sequences <- function(gff, fasta, species = "Bacteria", upstream = 300){
+
+  is_circular <- ifelse(species == "Bacteria", TRUE, FALSE)
 
   data <- read.table(gff,
                      sep = "\t",
@@ -43,8 +46,39 @@ get_sequences <- function(gff, fasta, is_circular, upstream = 300){
   genes <- data[data$feature == "gene",]
 
   tmp <- strsplit(x = genes$group, split = ";")
+
   GeneName <- unlist(lapply(X = tmp, function(x) x[1]))
-  GeneName <- sub(pattern = "ID=gene-", x = GeneName, replacement = "")
+  if (species == "Bacteria" || species == "S. cerevisiae") {
+    GeneName <- sub(pattern = "ID=gene-", x = GeneName, replacement = "")
+  } else if (species == "D. melanogaster") {
+    GeneName <- sub(pattern = "ID=gene-Dmel_", x = GeneName, replacement = "")
+  } else if (species == "C. elegans") {
+    GeneName <- sub(pattern = "ID=gene-CELE_", x = GeneName, replacement = "")
+  }
+
+  ambigous <- names(table(GeneName)[table(GeneName) > 1])
+  GeneNameIdx <- data.frame(name = GeneName, idx = seq_len(length(GeneName)))
+  idx_to_remove <- c()
+
+  for (gene in ambigous) {
+    gene_repetitions <- GeneNameIdx$idx[GeneNameIdx$name == gene]
+    gene_repetitions_to_remove <- sample(gene_repetitions,
+                                         length(gene_repetitions)-1,
+                                         replace = FALSE)
+    idx_to_remove <- c(idx_to_remove, gene_repetitions_to_remove)
+  }
+
+  if (species == "D. melanogaster") {
+    idx_to_remove <- c(idx_to_remove,
+                       which(startsWith(genes$seqname, "NW_")))
+  }
+
+  if (length(idx_to_remove)) {
+    GeneName <- GeneName[-idx_to_remove]
+    genes <- genes[-idx_to_remove,]
+  }
+
+
 
   regions_complete <- as.data.frame(t(apply(X = genes,
                                             MARGIN = 1,
