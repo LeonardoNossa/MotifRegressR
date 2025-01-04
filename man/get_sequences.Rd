@@ -4,7 +4,7 @@
 \alias{get_sequences}
 \title{Extract DNA Sequences Based on GFF and FASTA Files}
 \usage{
-get_sequences(gff, fasta, is_circular, upstream = 300)
+get_sequences(gff, fasta, species = "Bacteria", upstream = 300)
 }
 \arguments{
 \item{gff}{A string specifying the path to the GFF file containing genomic
@@ -13,8 +13,9 @@ features and regions.}
 \item{fasta}{A string specifying the path to the FASTA file containing the
 DNA sequences.}
 
-\item{is_circular}{A logical value indicating whether the chromosomes are
-circular.}
+\item{species}{A character, specifying the type of organism to consider.
+Can either be "Bacteria" (default), "C. elegans", "D. melanogaster" or
+"S. cerevisiae".}
 
 \item{upstream}{An integer specifying the number of base pairs to include
 upstream of each gene. Default is 300.}
