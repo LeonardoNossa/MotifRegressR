@@ -2,7 +2,7 @@
 % Please edit documentation in R/retrieve_frequencies.R
 \name{retrieve_frequencies}
 \alias{retrieve_frequencies}
-\title{Starting from FASTA file obtain the nucleotide frequencies}
+\title{Obtain the nucleotide frequencies from a FASTA file}
 \usage{
 retrieve_frequencies(fasta)
 }
@@ -14,6 +14,6 @@ A named vector with frequencies for each nucleotide
 (in this order A,C,G,T)
 }
 \description{
-This function takes in input FASTA file and computes the frequencies of each
+This function takes as input FASTA file and computes the frequencies of each
 nucleotide.
 }
