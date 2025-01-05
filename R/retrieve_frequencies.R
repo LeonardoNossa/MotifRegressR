@@ -1,13 +1,13 @@
-#' Starting from FASTA file obtain the nucleotide frequencies
+#' Obtain the nucleotide frequencies from a FASTA file
 #'
-#' This function takes in input FASTA file and computes the frequencies of each 
+#' This function takes as input FASTA file and computes the frequencies of each
 #' nucleotide.
-#' 
+#'
 #' @param fasta The path to the input FASTA file
-#'  
+#'
 #' @return A named vector with frequencies for each nucleotide
 #' (in this order A,C,G,T)
-#' 
+#'
 #' @importFrom Biostrings readDNAStringSet
 #' @importFrom Biostrings alphabetFrequency
 #' @export
