@@ -52,7 +52,7 @@ parameters.
 This function generates a named list containing the parameters for various
 regression models, including Randomized Lasso, PLS (Partial Least Squares),
 Linear Model (LM), K-Nearest Neighbors (KNN), Support Vector Machines (SVM),
-and Random Forest (RF).
+Random Forest (RF) and O2PLS regression.
 Users can supply specific values for each regression method's parameters,
 or leave them as \code{NA} to use defaults.
 }
