@@ -1,8 +1,9 @@
 #' Convert Regression Models to Dataframes
 #'
-#' This function processes a list of regression models (Randomized Lasso, PLS,
-#'  SVM, and LM) and converts them into a data frame for further analysis.
-#'  The models are unpacked based on their type and conditions.
+#' This function processes a list of regression models
+#' ("Randomized_lasso", "PLS", "SVM", "LM", "KNN", "RF", "O2PLS")
+#' and converts them into a data frame for further analysis.
+#' The models are unpacked based on their type.
 #'
 #' @param regression_list A list of regression models. The names of the list
 #' elements should correspond to the model types ("Randomized_lasso", "PLS",
