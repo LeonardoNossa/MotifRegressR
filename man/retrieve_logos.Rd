@@ -11,7 +11,7 @@ retrieve_logos(PFMs)
 are informative of the motif ID and the TF it is bound by.}
 }
 \value{
-A list of plots, each corresponding to a sequence logo
+A named list of plots, each corresponding to a sequence logo
 }
 \description{
 This function takes as input a named list of PFMa and uses it to generate
