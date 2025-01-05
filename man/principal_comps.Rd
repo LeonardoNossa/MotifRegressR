@@ -8,14 +8,13 @@ principal_comps(matrix, explained_var = 95, axis = 2, scale = TRUE)
 }
 \arguments{
 \item{matrix}{A numeric matrix to perform PCA on. Each row represents an
-observation, and each column represents a variable. If \code{axis = 1}, rows and
-columns are transposed.}
+observation, and each column represents a variable.}
 
 \item{explained_var}{A numeric value (default: 95) indicating the percentage
 of variance that the retained principal components should explain.}
 
-\item{axis}{An integer (default: 2) indicating whether to analyze the input
-matrix as is (\code{axis = 2}) or transpose it (\code{axis = 1}).}
+\item{axis}{An integer (default: 2) indicating whether to perform
+PCA on the columns (\code{axis = 2}) or on the rows of the matrix (\code{axis = 1}).}
 
 \item{scale}{A logical value (default: TRUE) indicating whether the variables
 should be scaled to unit variance before performing PCA.}
@@ -23,8 +22,6 @@ should be scaled to unit variance before performing PCA.}
 \value{
 A numeric matrix containing the coordinates of the input data
 projected onto the principal components that explain the specified variance.
-The output matrix has dimensions consistent with the transposition specified
-by \code{axis}.
 }
 \description{
 This function performs Principal Component Analysis (PCA) on a given matrix
