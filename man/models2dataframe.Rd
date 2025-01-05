@@ -22,7 +22,8 @@ A list of data frames, each corresponding to a model type and
 containing unpacked results for each condition.
 }
 \description{
-This function processes a list of regression models (Randomized Lasso, PLS,
-SVM, and LM) and converts them into a data frame for further analysis.
-The models are unpacked based on their type and conditions.
+This function processes a list of regression models
+("Randomized_lasso", "PLS", "SVM", "LM", "KNN", "RF", "O2PLS")
+and converts them into a data frame for further analysis.
+The models are unpacked based on their type.
 }
