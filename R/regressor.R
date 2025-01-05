@@ -467,34 +467,34 @@ Regression_O2PLS <- function(Scores, TPMs, Condition, params) {
 
 #' Retrieve Regression Parameter List
 #'
-#' This function generates a named list containing the parameters for various 
-#' regression models, including Randomized Lasso, PLS (Partial Least Squares), 
-#' Linear Model (LM), K-Nearest Neighbors (KNN), Support Vector Machines (SVM), 
-#' and Random Forest (RF).
-#' Users can supply specific values for each regression method's parameters, 
+#' This function generates a named list containing the parameters for various
+#' regression models, including Randomized Lasso, PLS (Partial Least Squares),
+#' Linear Model (LM), K-Nearest Neighbors (KNN), Support Vector Machines (SVM),
+#' Random Forest (RF) and O2PLS regression.
+#' Users can supply specific values for each regression method's parameters,
 #' or leave them as `NA` to use defaults.
 #'
-#' @param Regression_lasso_cutoff Numeric. Cutoff value for Randomized Lasso 
+#' @param Regression_lasso_cutoff Numeric. Cutoff value for Randomized Lasso
 #' regression. Defaults to `NA`.
-#' @param Regression_svm_kernel Character. Specifies the kernel type for SVM 
+#' @param Regression_svm_kernel Character. Specifies the kernel type for SVM
 #' (e.g., "linear", "radial"). Defaults to `NA`.
-#' @param Regression_KNN_num_cores Integer. Number of cores to use for parallel 
+#' @param Regression_KNN_num_cores Integer. Number of cores to use for parallel
 #' processing in KNN. Defaults to `NA`.
 #' @param Regression_KNN_cv Integer. Number of cross-validation folds for KNN.
 #' Defaults to `NA`.
-#' @param Regression_RF_ntree Integer. Number of trees to grow in the Random 
+#' @param Regression_RF_ntree Integer. Number of trees to grow in the Random
 #' Forest. Defaults to `NA`.
-#' @param Regression_RF_mtry Integer. Number of variables randomly sampled as 
+#' @param Regression_RF_mtry Integer. Number of variables randomly sampled as
 #' candidates at each split in Random Forest. Defaults to `NA`.
 #'
-#' @return A named list of vectors, where each vector contains parameters 
+#' @return A named list of vectors, where each vector contains parameters
 #' specific to one regression model:
 #' \itemize{
-#'   \item \code{Randomized_lasso}: A vector containing the \code{cutoff} 
+#'   \item \code{Randomized_lasso}: A vector containing the \code{cutoff}
 #'   parameter.
 #'   \item \code{PLS}: `NA` (placeholder for Partial Least Squares parameters).
 #'   \item \code{LM}: `NA` (placeholder for Linear Model parameters).
-#'   \item \code{KNN}: A vector containing \code{num_cores} and \code{cv} 
+#'   \item \code{KNN}: A vector containing \code{num_cores} and \code{cv}
 #'   parameters.
 #'   \item \code{SVM}: A vector containing the \code{kernel} parameter.
 #'   \item \code{RF}: A vector containing \code{ntree} and \code{mtry}
