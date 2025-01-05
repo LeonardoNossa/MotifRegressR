@@ -4,22 +4,22 @@ Version: 0.1.0
 Authors@R: 
     c(
         person("Leonardo", "Nossa", email = "leonardo.nossa@studenti.unimi.it", role = c("aut", "cre")),
-        person("Federico", "Camozzi", role = "aut"),
-        person("Marco", "Cominelli", role = "aut"),
-        person("Riccardo", "de Sury", role = "aut"),
-        person("Teodor", "Devda", role = "aut"),
-        person("Laura", "Mottarlini", role = "aut"),
+        person("Elena", "Sasso", role = "aut"),
         person("Gabriele", "Oliveto", role = "aut"),
-        person("Elena", "Sasso", role = "aut")
+        person("Marco", "Cominelli", role = "aut"),
+        person("Teodor", "Devda", role = "aut"),
+        person("Riccardo", "de Sury", role = "aut"),
+        person("Laura", "Mottarlini", role = "aut"),
+        person("Federico", "Camozzi", role = "aut")
     )
-Description: This R package facilitates motif analysis for gene expression studies. It integrates upstream DNA sequence information, gene expression profiles, and Position Frequency Matrices (PFMs) to identify regulatory motifs influencing gene expression. Users can import PFMs from JASPAR or custom sources, annotate genomic sequences with transcription start sites (TSS), and retrieve metadata of gene expression conditions. The package scores motifs across genes, aggregates the results, and performs regression analysis to determine the most impactful motifs under different experimental conditions. Visualization function finally help the user in the sense-making step of the analyses.
+Description: MotifRegressR allows its users to perform DNA motifs regression in the context of gene expression studies, allowing the investigation of the most impactful motifs over different samples. This is done by integrating gene upstream sequences (promoters) with Position Weight Matrices (PWMs) of the chosen organism. By sliding the PWMs over each gene, we assign to each gene the maximum score obtained for each DNA motif and then build the matrix of scores S. Users can import PFMs from JASPAR or custom sources (via a MEME file) and obtain the upstream sequences by proving a .gff and a FASTA file as input. Users can also upload gene expression compendia containing gene expression levels across different conditions. If the IDs associated to each condition allow it, metadata can be retrieved from ENA browser to obtain more information regarding the samples. MotifRegressR then performs regression analysis and determines the most impactful motifs for the different tested conditions. Downstream steps, mainly represented by visualization functions finally help the user in the sense making steps of the analyses.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports: future, future.apply, utils, httr, jsonlite, glue, FactoMineR, ComplexHeatmap, Rtsne, caret, ggseqlogo, monaLisa, pls, umap
+Imports: future, future.apply, utils, httr, jsonlite, glue, FactoMineR
 biocViews: ShinyApps, WorkflowManagement, StatisticalMethod
 Suggests: knitr, rmarkdown, BiocStyle, devtools
 VignetteBuilder: knitr
-URL: https://github.com/LeonardoNossa/MotifRegressR
-BugReports: https://github.com/LeonardoNossa/MotifRegressR/issues
+URL: https://github.com/LeonardoNossa/Motif-regressor
+BugReports: https://github.com/LeonardoNossa/Motif-regressor/issues
