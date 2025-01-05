@@ -2,7 +2,7 @@
 #'
 #' This function extracts DNA sequences based on gene regions defined in a GFF
 #' file and retrieves the corresponding sequences from a FASTA file.
-#' The function returns a data frame with the extracted sequences for each gene.
+#' The function returns a matrix with the extracted sequences for each gene.
 #'
 #' @param gff A string specifying the path to the GFF file containing genomic
 #' features and regions.
@@ -14,7 +14,7 @@
 #' @param upstream An integer specifying the number of base pairs to include
 #' upstream of each gene. Default is 300.
 #'
-#' @return A data frame with two columns:
+#' @return A matrix with two columns:
 #' \item{Chr}{The chromosome name for each extracted sequence.}
 #' \item{Sequence}{The DNA sequence for each gene, extracted from the specified
 #' region in the FASTA file.}
