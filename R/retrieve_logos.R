@@ -6,7 +6,7 @@
 #' @param PFMs A named list of PFMs. The names of the list
 #' are informative of the motif ID and the TF it is bound by.
 #'
-#' @return A list of plots, each corresponding to a sequence logo
+#' @return A named list of plots, each corresponding to a sequence logo
 #'
 #' @importFrom ggseqlogo ggseqlogo
 #' @importFrom ggplot2 ggtitle
