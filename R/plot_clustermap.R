@@ -1,6 +1,6 @@
 #' Plot clustermap
 #'
-#' This function takes as input A sublist coming from `models2dataframe`,
+#' This function takes as input a sublist coming from `models2dataframe`,
 #' distances metrics and clustering approaches. The data.frame inside the
 #' sublist is first pivoted using `pivot_df` function, then a clustermap is
 #' built
