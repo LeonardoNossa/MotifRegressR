@@ -3,7 +3,7 @@
 #' This function trains multiple regression models on the provided scores and
 #' compendium data. It filters the rows to retain only the common ones between
 #' the scores and the compendium before training the models. The function allows
-#' for training various types of regression models based on the specified 
+#' for training various types of regression models based on the specified
 #' regression types and their respective parameters.
 #'
 #' @param scores A data frame or matrix of scores (e.g., feature scores or
@@ -14,9 +14,9 @@
 #' regression models.
 #' @param regression_type A character vector specifying the types of regression
 #' models to be trained. Available types depend on the `train_models` function.
-#' @param regression_params_list A list where each element corresponds to a 
-#' regression model type from `regression_type` and contains a list of 
-#' parameters required for training the respective model.
+#' @param regression_params_list A list containing regression parameters to use
+#' in the regression models. The list should be the output of
+#' `retrieve_params_list` function.
 #'
 #' @return A list of regression models, each corresponding to a specified
 #' regression type.
