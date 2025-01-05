@@ -21,7 +21,7 @@ Can either be "Bacteria" (default), "C. elegans", "D. melanogaster" or
 upstream of each gene. Default is 300.}
 }
 \value{
-A data frame with two columns:
+A matrix with two columns:
 \item{Chr}{The chromosome name for each extracted sequence.}
 \item{Sequence}{The DNA sequence for each gene, extracted from the specified
 region in the FASTA file.}
@@ -29,5 +29,5 @@ region in the FASTA file.}
 \description{
 This function extracts DNA sequences based on gene regions defined in a GFF
 file and retrieves the corresponding sequences from a FASTA file.
-The function returns a data frame with the extracted sequences for each gene.
+The function returns a matrix with the extracted sequences for each gene.
 }
