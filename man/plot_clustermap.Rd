@@ -32,7 +32,7 @@ a clustermap, showing the grouping of motifs and conditions, based on
 the importance values.
 }
 \description{
-This function takes as input A sublist coming from \code{models2dataframe},
+This function takes as input a sublist coming from \code{models2dataframe},
 distances metrics and clustering approaches. The data.frame inside the
 sublist is first pivoted using \code{pivot_df} function, then a clustermap is
 built
