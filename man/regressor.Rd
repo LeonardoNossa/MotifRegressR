@@ -25,9 +25,9 @@ regression models.}
 \item{regression_type}{A character vector specifying the types of regression
 models to be trained. Available types depend on the \code{train_models} function.}
 
-\item{regression_params_list}{A list where each element corresponds to a
-regression model type from \code{regression_type} and contains a list of
-parameters required for training the respective model.}
+\item{regression_params_list}{A list containing regression parameters to use
+in the regression models. The list should be the output of
+\code{retrieve_params_list} function.}
 }
 \value{
 A list of regression models, each corresponding to a specified
