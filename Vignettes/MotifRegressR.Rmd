@@ -63,6 +63,10 @@ taxonomy ID to retrieve motifs from JASPAR database.
 
 In the following example we are loading the first ten motifs from the local file `SwissRegulon_e_coli.meme` in the `extdata` directory. In order to speed up downstream steps, we will only take the first ten PFMs.
 
+```{r set.seed}
+set.seed(123)
+```
+
 ```{r PFM_loader}
 path_PFM <- system.file("extdata", "SwissRegulon_e_coli.meme", package = "MotifRegressR")
 PFMs <- PFM_loader(path = path_PFM, tax_id = NULL)
