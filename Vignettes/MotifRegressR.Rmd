@@ -1,0 +1,464 @@
+---
+title: "MotifRegressR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MotifRegressR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Follow these commands to safely install the package:
+
+```{r Package Installation, eval=FALSE}
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+library(devtools)
+
+devtools::install_github("https://github.com/LeonardoNossa/MotifRegressR")
+```
+
+```{r Load MotifRegressR, eval = FALSE}
+library(MotifRegressR)
+```
+
+```{r Load MotifRegressR 2, include = FALSE}
+suppressPackageStartupMessages(library(MotifRegressR))
+```
+
+## Description
+
+MotifRegressR allows its users to perform DNA motifs regression in the context of 
+gene expression studies, allowing the investigation of the most impactful motifs over different samples. 
+
+This is done by integrating gene upstream sequences (promoters) with Position Weight Matrices (PWMs) of the chosen organism. By sliding the PWMs over each gene, we assign to each gene the maximum score obtained for each DNA motif and then build the matrix of scores S.
+
+Users can import PFMs from JASPAR or custom sources (via a MEME file) and obtain the upstream sequences by proving a .gff and a FASTA file as input.
+
+Users can also upload gene expression compendia containing gene expression levels across different conditions. If the IDs associated to each condition allow it, metadata can be retrieved from ENA browser to obtain more information regarding the samples. 
+
+MotifRegressR then performs regression analysis and determines the most impactful motifs for the different tested conditions. Downstream steps, mainly represented by visualization functions finally help the user in the sense-making steps of the analyses.
+
+Below you find a visual representation of the project pipeline.
+If you are part of the University of Milan, you can view it by clicking the following link and entering your credentials.
+
+[Microsoft Whiteboard Pipeline](https://unimi2013-my.sharepoint.com/:wb:/g/personal/marco_cominelli_studenti_unimi_it/EZApUGSaatFPlyUGVJopINMBtisiIJ_IU2fPwyi4fezndQ?e=mzdgal)
+
+## Pipeline for the users in R
+Here below you can find the commands of the pipeline with examples and explanations of the different functions. 
+In the examples, we will use smaller portions of the typical data you would provide. This is done to speed up processing and give an overall idea on how the package works. 
+All of the results you will see below are done using E.coli data
+
+### PFM_loader
+The first passage is to upload on the Position frequency matrices (PFMs) with 
+the specific function.You can load PFMs either from a local file in MEME format or by specifying a 
+taxonomy ID to retrieve motifs from JASPAR database.
+
+In the following example we are loading the first ten motifs from the local file `SwissRegulon_e_coli.meme` in the `extdata` directory. In order to speed up downstream steps, we will only take the first ten PFMs.
+
+```{r PFM_loader}
+path_PFM <- system.file("extdata", "SwissRegulon_e_coli.meme", package = "MotifRegressR")
+PFMs <- PFM_loader(path = path_PFM, tax_id = NULL)
+```
+
+```{r PFM_loader 2, echo = FALSE}
+PFMs_10 <- PFMs[1:10]
+print(PFMs_10[7])
+```
+
+### retrieve_logos
+The user can use the function `retrieve_logos` to retrieve the genomic logos 
+of the motifs contained in the PFM list
+
+```{r, retrieve_logos}
+logos <- retrieve_logos(PFMs = PFMs_10)
+```
+
+```{r, retrieve_logos 2, echo = FALSE, fig.width=4, fig.height=3}
+logos[[7]]
+```
+
+
+### retrieve_frequencies
+By using this function the user can retrieve the nucleotide frequencies of an organism,
+starting from its genome sequence, provided in FASTA format.
+
+```{r, retrieve_frequencies}
+path_fasta <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+background <- retrieve_frequencies(fasta = path_fasta)
+```
+
+```{r, retrieve_frequencies 2, echo = FALSE}
+print(background)
+```
+
+### PFM2PWM
+The next step is to convert all your PFMs into Position weight matrices (PWMs).
+The user can provide the genomic background computed in the previous section, 
+or simply assume an uniform background of 0.25 for each nucleotide
+
+```{r, PFM2PWM}
+PWMs <- PFM2PWM(PFMs = PFMs_10, background = background)
+```
+
+```{r, PFM2PWM 2, echo = FALSE}
+print(PWMs[7])
+```
+
+### get_sequences
+
+The user will then use the get_sequences function to extract DNA sequences, 
+corresponding to regions upstream to each gene. The function uses regions corresponding to genes 
+defined in a GFF file and retrieves the corresponding sequences from a FASTA file.
+Given that we are working with E. coli, we set the `species` parameter to "Bacteria". 
+The `upstream` value is set to 300bp by default, but can be specified by the user.
+
+```{r, get_sequences}
+path_gff <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.gff", package = "MotifRegressR")
+path_fasta <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+
+dataSeq <- get_sequences(gff = path_gff, fasta = path_fasta, species = "Bacteria")
+```
+
+```{r, get_sequences 2, echo = FALSE}
+dataSeq_500 <- dataSeq[1:500,]
+row <- dataSeq_500[1,]
+chr <- row["Chr"]
+seq <- row["Sequence"]
+
+print(paste0("Chr: ",chr))
+print(paste0("Sequence: ", substr(seq,1,25)[[1]], "..." ,substr(seq,nchar(seq)-25,nchar(seq))[[1]]))
+```
+
+### scorer
+
+Now that the user obtained PWMs and the upstream gene sequences, 
+the Scores matrix S can be computed. MotifRegressR evaluates how well 
+each sequence aligns with the position weight matrices. 
+This process involves scoring upstream sequences of each gene, 
+by sliding the PWMs on them. The final score of a Motif on a gene 
+is the maximum among all the scores obtained during the sliding 
+(the most reliable binding site will correspond to the highest score).
+
+The user can decide whether or not to also consider the reverse complement of the sequences.
+This is specified by the `both` parameter. If both strands are considered, two matrices are computed
+and the final score will be the maximum between the two strands (i.e. the most reliable binding site).
+
+Given the computational burden of this step, parallelization is employed.
+You can modify the number of cores to use with the parameter `workers`.
+
+```{r, scorer}
+S <- scorer(PWMs = PWMs, dataSeq = dataSeq_500, workers = 5, both = TRUE)
+```
+
+```{r, scorer 2, echo = FALSE}
+row_name <- rownames(S)[1]
+row_values <- S[1,]
+print(paste0("Scores for gene ",row_name,": "))
+print(row_values)
+```
+
+### compendium_loader
+
+The user can then load gene expressions data.
+This function loads data from a specified file path and returns a data
+frame. It uses `read.table()` to read the file, assuming a comma-separated
+values (CSV) format.
+
+```{r, compendium_loader}
+path_compendium <- system.file("extdata", "compendium.csv", package = "MotifRegressR")
+compendium <- compendium_loader(path = path_compendium, sep = ",", header = TRUE, row.names = 1)
+```
+
+```{r, compendium_loader 2, echo = FALSE}
+compendium_500 <- compendium[1:500, 1:10]
+print(compendium_500[1,])
+```
+
+### retrieve_metadata
+
+If the compendium sample IDs allow it, the user can retrieve metadata about the samples
+using this function that looks for the sample IDs and retrieve information from the ENA browser.
+
+```{r, retrieve_metadata}
+metadata <- retrieve_metadata(compendium = compendium_500)
+```
+
+```{r, retrieve_metadata 2, echo = FALSE}
+row <- metadata[1,]
+row_name <- rownames(row)
+print(paste0("Metadata for sample ", row_name, ": "))
+cat("\n")
+for (colname in colnames(row)) {
+  raw_text <- row[,colname]
+  if (nchar(raw_text)>50) {
+    raw_text <- paste0(substr(raw_text,1,20)," ... ",substr(raw_text,nchar(raw_text)-20,nchar(raw_text)))
+  }
+  text <- paste0(colname,": ",raw_text)
+  print(text)
+}
+```
+
+### plot_dimensionality_reduction
+
+MotifRegressR allows the user to visualize the samples in the compendium in a 2D space, 
+by applying dimensionality reduction techniques. Results are visualized using `plotly`, 
+also integrating metadata information, if possible. If metadata are present, 
+the user can also decide to color points by a certain feature contained in the metadata. 
+Here we color points by "tax_id"
+
+The function supports different dimensionality reduction techniques, here we use the PCA method.
+
+```{r, plot_dimensionality_reduction, fig.width=8, fig.height=5}
+plot_dimensionality_reduction(compendium = compendium_500, metadata = metadata, 
+                              color_by = "tax_id", method = "PCA")
+```
+
+### principal_comps [OPTIONAL STEP]
+
+This function has been though in order to reduce the dimensionality of the gene expression compendium.
+By using `principal_comps` function, the user is allowed to find the optimal number of components that 
+explain the desired % of variance. The function takes as input a matrix and returns a matrix 
+representing the coordinates of the points in the PCA space. 
+Even though the function has been implemented to be used on the columns of the compendium, 
+the user can actually use it also on the rows of both compendium and S matrix.
+
+The user can choose the % of explained variance used 
+to determine the right number of components (`explained_var` parameter),
+the axis on which to perform PCA (`axis = 1` for rows, `axis = 2` for columns)
+and finally can also choose whether or not to scale the data before performing the PCA (`scale` parameter).
+
+This step is thought to be optional and obviously reduces interpretability of the results. 
+
+```{r principal_comps, eval=FALSE}
+PC <- principal_comps(matrix = as.matrix(compendium_500), 
+                      explained_var = 95, axis = 2, scale = TRUE)
+```
+
+### table_first_genes & filter [OPTIONAL STEP]
+
+If the organism is prokaryotic, proper filtering has to be made 
+in order to only consider first genes of each operon. The idea is that taking upstream sequences 
+of genes that are in the middle of the operon, won't add information to the analysis, 
+and will likely only introduce bias in the results. 
+(If we score the upstream sequences of a gene that is in the middle of an operon, 
+we are not getting its promoter, but likely the gene before).
+
+The idea is to integrate information coming from the file you find below 
+in order to build a table containing only the first genes of each operon.
+
+```{r, table_first_genes}
+path_TSV <- system.file("extdata", "TUSet.tsv", package = "MotifRegressR")
+path_PRO <- system.file("extdata", "511145_protein_info_v12_0.txt", package = "MotifRegressR")
+
+first_genes <- table_first_genes(tsv = path_TSV, pro = path_PRO)
+```
+
+```{r, table_first_genes 2, echo = FALSE}
+print(first_genes[1:5,])
+```
+
+A filtering can then be performed on the S matrix and the compendium 
+to only retain the first genes of each operon. This is done using the `filter` 
+function. During the filtering step, GeneIDs are replaced by the actual gene names
+for better readibility of the results.
+
+```{r, filter}
+S <- filter(to_filter = S, to_keep = first_genes)
+compendium_500 <- filter(to_filter = compendium_500, to_keep = first_genes)
+```
+
+### regressor and retrieve_params_list
+
+Once both the S matrix and the gene expression compendium are retrieved, 
+the user can perform the regression step. In the context of regression,
+the Score matrix S will be the predictor matrix X, while single columns of the 
+compendium will be the response variable y.
+
+After the fitting of the models, the idea is to extract values representing the
+importance of a certain motif (a column of the S matrix) in a certain condition
+
+Please, remember that here only a small portion of data is used as examples.
+
+`regressor` function trains multiple regression models on the Score matrix and
+compendium data, over the selected number of columns. 
+
+It filters the rows to retain only the common ones between the scores and the 
+compendium before training the models. The function allows to train various types 
+of regression models based on the specified regression types and their respective parameters.
+
+Supported regression in this first release are:
+
+- Simple linear regression: "LM"
+- Partial Least Squares regression: "PLS"
+- K-nearest neighbors regression: "KNN"
+- Random Forest regression: "RF"
+- Support Vector Machines regression: "SVM"
+- Randomized Stability Lasso regression: "Randomized_lasso"
+- O2PLS regression: "O2PLS"
+
+The user is allowed to specify regression parameters, 
+or leave them as default, by using the `retrieve_params_list` function.
+The function returns a list of arguments that MUST be passed as an argument of
+`regressor`.
+
+In this case we will use 5 regression types ("LM", "RF", "SVM", "PLS", "O2PLS"),
+over 5 conditions in the compendium. Parameters are left as default.
+
+```{r, regressor and retrieve_params_list}
+regression_params_list <- retrieve_params_list()
+regressions <- c("LM", "RF", "SVM","PLS","O2PLS")
+models <- regressor(scores = S, compendium = compendium_500, 
+                    conditions = c(1,2,3,4,5), regression_type = regressions, 
+                    regression_params_list = regression_params_list)
+```
+
+The output of the function will be a named list, where each element is a vector, 
+corresponding to a specific regression type over all tested conditions.
+
+### Disgnostic plots: plot_<regression_type>
+
+The user has access to plotting function for each of the implemented regression models:
+
+- plot_LM
+- plot_KNN
+- plot_SVM
+- plot_PLS
+- plot_O2PLS
+- plot_RANDLASSO
+- plot_RF
+
+Each function returns a named list containing the plots and the data used to generate them
+In this example we will visualize plots for a PLS model.
+
+```{r, plot_PLS 2, echo = FALSE, warning = FALSE}
+plot_list <- plot_PLS(models$PLS$DRR091867)
+```
+
+```{r, plot_PLS 3, fig.width=8, fig.height=5}
+plot_list$Component_2
+```
+
+### models2dataframe
+
+With this function you can convert the models list, obtained as output of `regressor` 
+into dataframes, containing the top `k` important motifs for each model. 
+If the extraction of the motifs require a filtering step 
+(significance of beta coefficients for "LM") , this is automatically taken care of.
+
+```{r, models2dataframe}
+dfs <- models2dataframe(regression_list = models, alpha = 0.05)
+```
+
+The output of the function will be a named list of dataframes, each of them
+corresponding to a different regression type. Each dataframe contains the top
+`k` most important motifs, the condition they refer to (`k` motifs per condition)
+and their importance value.
+
+```{r, models2dataframe 2, echo = FALSE}
+dfs["PLS"]
+```
+
+### plot_digraph
+
+This function allows the user to visualize relationships between motifs and 
+conditions in a bipartite directed graph. In order to realize the plot,
+the function needs the names of the motifs and one of the sublists obtained
+using `models2dataframe` function.
+
+The nodes represent conditions (diamonds) and motifs (squares)
+The edges connect a motif to a condition if that motif is among the
+top `k` motifs in that condition for that regression model. 
+Edges are colored proportionally to their Importance value.
+
+The graph is rendered interactively using Plotly. 
+Here we chose PLS as example.
+
+```{r, plot_digraph, fig.width=7, fig.height=7}
+plot_digraph(motif_names = colnames(S), edges_sublist = dfs["PLS"])
+```
+
+### plot_clustermap
+
+In order to visualize motifs exhibiting similar patterns across conditions (and most similar conditions aswell),
+the user can use this function to build a clustermap.
+The function takes as input a sublist coming from `models2dataframe`.
+Clustering methods and metrics can also be specified for both rows and columns.
+
+
+```{r, plot_clustermap, fig.width=11, fig.height=11}
+plot_clustermap(df_sublist = dfs["PLS"], 
+                distance = c("euclidean", "euclidean"), 
+                method = c("single", "single"))
+
+```
+
+### consensus_motifs
+
+Motif regression is no easy task and single regression models are not always able 
+to fully describe gene expression using Motif Scores. 
+The strength of MotifRegressR lies in the number of regression types that can be used by the user.
+That is why `consensus_motifs` function has been implemented. 
+
+The function takes as input the output of `models2dataframe` and builds 
+a consenus of motifs to explore the conservation of motifs across
+different regression types `by_regressor = TRUE` or across conditions `by_regressor = FALSE`.
+
+- In the first case (`by_regressor = TRUE`) we are looking 
+at how many times a motif appears among the top `k` motifs
+in that condition, across all regression types.
+
+- In the second case `by_regressor = FALSE`) we are looking 
+at how many times a motif appears among the top `k` motifs
+in that regression type, across all conditions.
+
+```{r, consensus_motifs}
+consensus <- consensus_motifs(df_list = dfs, by_regressor = TRUE)
+```
+
+### consensus_motifs_heatmap
+
+The user can then visualize results in the form of a heatmap:
+The heatmap will show the conservation of motifs across conditions
+or regression types, according to `by_regressor` parameter.
+
+In this case we are looking at motifs conservation across regression types
+Darker cells will represent motifs that appear among the top `k` motifs in that
+condition.
+
+```{r, consensus_motifs_heatmap, fig.width=6, fig.height=6}
+consensus_motifs_heatmap(consensus_output = consensus)
+```
+
+### consensus_fisher_test
+
+The statistical significance of the consensus (association between motifs and conditions) 
+can be validated using a Fisher's Exact test. Due to the sparsity of the matrix, 
+results have to be interpreted carefully, but give a nice insight on 
+the statistical significance of the observed conservation of motifs.
+
+The function has been thought to assess association between motifs and conditions.
+`num_of_regressions` parameters should be the length of `models2dataframe` output
+(which is a list, with one element per regression type).
+
+
+```{r, consensus_fisher_test}
+consensus_fisher_test(consensus = consensus,
+                      num_of_regressions = length(dfs),
+                      alpha = 0.05)
+```
+
+The results here appears to be non-significant, likely for the reduced number of 
+motifs, genes and conditions we chose for the analysis.
+
+## Web interface app
+
+A shiny Web application has also been implemented to allow people not familiar with R
+to use MotifRegressR functionalities. In order to use it, run the `app.R` script and read the tutorial!
