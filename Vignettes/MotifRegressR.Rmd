@@ -129,7 +129,7 @@ print(PWMs[7])
 
 The user will then use the `get_sequences` function to extract DNA sequences, 
 corresponding to regions upstream to each gene (promoters). 
-The function uses regions corresponding to genesdefined in a GFF file 
+The function uses regions corresponding to genes defined in a GFF file 
 and retrieves the corresponding sequences from a FASTA file.
 Given that we are working with E. coli, we set the `species` parameter to "Bacteria". 
 The `upstream` value is set to 300bp by default, but can be specified by the user.
@@ -154,7 +154,7 @@ The function returns a matrix of size N x 2, where N is the number of genes.
 
 - The first column "Chr" contains the chromosome ID to which the sequence belongs
 - The second column "Sequence" contains the actual sequence
-- The rownames of the matrix correspond to the gene IDs
+- The row names of the matrix correspond to the gene IDs
 
 ### scorer
 
@@ -172,8 +172,8 @@ This is specified by the `both` parameter. If both strands are considered, two m
 and the final score will be the maximum between the two strands (i.e. the most reliable binding site).
 
 Considering both strands should allow the integration of more information and the
-production of more reliable results, since Transcription Factor binding on the DNA
-should be a matter of 3D interactions.
+production of more reliable results, since we are considering more putative binding
+sites.
 
 Given the computational burden of this step, parallelization is employed.
 You can modify the number of cores to use with the parameter `workers`.
@@ -192,7 +192,7 @@ print(row_values)
 The function returns a matrix of size N x M, where N is the number of genes 
 (one upstream sequence for each gene) and M is the number of motifs.
 
-- The rownames will be the gene IDs
+- The row names will be the gene IDs
 - The column names will be the names of the motifs
 
 Each entry will be the best score assigned to a motif in a particular gene.
@@ -216,10 +216,10 @@ cat("\n")
 print(compendium_500[1,])
 ```
 
-The shape of the compendium dataframe should be N x K, where N is the number of genes
+The shape of the compendium data frame should be N x K, where N is the number of genes
 and K is the number of samples. 
 
-- The rownames will be the gene IDs
+- The row names will be the gene IDs
 - The column names will be sample IDs (or generic sample names)
 
 Each entry will be the gene expression level of a gene in a sample.
@@ -247,8 +247,8 @@ for (colname in colnames(row)) {
   print(text)
 }
 ```
-The function returns a dataframe of size (at most) K x 27, where K is the number of samples
-If metadata for some samples cannot be retrieved the metadata dataframe will have less than K rows
+The function returns a data frame of size (at most) K x 27, where K is the number of samples
+If metadata for some samples cannot be retrieved the metadata data frame will have less than K rows
 The columns contain selected features of each sample.
 
 ### plot_dimensionality_reduction
@@ -257,7 +257,7 @@ MotifRegressR allows the user to visualize the samples in the compendium in a 2D
 by applying dimensionality reduction techniques. Results are visualized using `plotly`, 
 also integrating metadata information, if possible. If metadata are present, 
 the user can also decide to color points by a certain feature contained in the metadata. 
-Here we color points by "tax_id"
+Here we color points by "tax_id".
 
 The function supports different dimensionality reduction techniques.
 Available dimensionality reduction techniques in this first release are:
@@ -276,7 +276,7 @@ plot_dimensionality_reduction(compendium = compendium_500, metadata = metadata,
 
 ### principal_comps [OPTIONAL STEP]
 
-This function has been though in order to reduce the dimensionality of the gene expression compendium.
+This function has been thought in order to reduce the dimensionality of the gene expression compendium.
 By using `principal_comps` function, the user is allowed to find the optimal number of components that 
 explain the desired % of variance. The function takes as input a matrix and returns a matrix 
 representing the coordinates of the points in the PCA space. 
@@ -300,8 +300,8 @@ PC <- principal_comps(matrix = as.matrix(compendium_500),
 If the organism is prokaryotic, proper filtering has to be made 
 in order to only consider first genes of each operon. 
 The idea is that taking upstream sequences of genes that are in the middle of the operon, 
-won't add information to the analysis, and will likely only introduce bias in the results. 
-(If we score the upstream sequences of a gene that is in the middle of an operon, 
+won't add information to the analysis, and will likely only introduce bias in the results 
+(if we score the upstream sequences of a gene that is in the middle of an operon, 
 we are not getting its promoter, but likely the gene before).
 
 The idea is to integrate information coming from the files you find below 
@@ -330,7 +330,7 @@ of genes. For each gene ID we will have its corresponding gene name.
 A filtering step can then be performed on the S matrix and the compendium 
 to only retain the first genes of each operon. This is done using the `filter` 
 function. During the filtering step, GeneIDs are replaced by the actual gene names
-for better readibility of the results.
+for better readability of the results.
 
 ```{r, filter}
 S <- filter(to_filter = S, to_keep = first_genes)
@@ -345,7 +345,7 @@ the Score matrix S will be the predictor matrix X, while single columns of the
 compendium will be the response variable y.
 
 After the fitting of the models, the idea is to extract values representing the
-importance of a certain motif (a column of the S matrix) in a certain condition
+importance of a certain motif (a column of the S matrix) in a certain condition.
 
 Please, remember that here only a small portion of data is used as examples.
 
@@ -364,7 +364,7 @@ Supported regression in this first release are:
 - Random Forest regression: "RF"
 - Support Vector Machines regression: "SVM"
 - Randomized Stability Lasso regression: "Randomized_lasso"
-- O2PLS regression: "O2PLS"
+- Two-way Orthogonal PLS regression: "O2PLS"
 
 The user is allowed to specify regression parameters, 
 or leave them as default, by using the `retrieve_params_list` function.
@@ -399,7 +399,7 @@ The user has access to plotting function for each of the implemented regression 
 - plot_RANDLASSO
 - plot_RF
 
-Each function returns a named list containing the plots and the data used to generate them
+Each function returns a named list containing the plots and the data used to generate them.
 In this example we will visualize plots for a PLS model.
 
 ```{r, plot_PLS, echo = FALSE, warning = FALSE}
@@ -417,7 +417,7 @@ plot_list$Component_2
 ### models2dataframe
 
 With this function you can convert the models list, obtained as output of `regressor` 
-into dataframes, containing the top `k` important motifs for each model. 
+into data frames, containing the top `k` important motifs for each model. 
 If the extraction of the motifs require a filtering step 
 (significance of beta coefficients for "LM") , this is automatically taken care of.
 
@@ -425,8 +425,8 @@ If the extraction of the motifs require a filtering step
 dfs <- models2dataframe(regression_list = models, alpha = 0.05)
 ```
 
-The output of the function will be a named list of dataframes, each of them
-corresponding to a different regression type. Each dataframe contains the top
+The output of the function will be a named list of data frames, each of them
+corresponding to a different regression type. Each data frame contains the top
 `k` most important motifs, the condition they refer to (`k` motifs per condition)
 and their importance value.
 
@@ -437,16 +437,16 @@ dfs["PLS"]
 ### plot_digraph
 
 This function allows the user to visualize relationships between motifs and 
-conditions in a bipartite directed graph. In order to realize the plot,
+conditions in a bipartite graph. In order to realize the plot,
 the function needs the names of the motifs and one of the sublists obtained
 using `models2dataframe` function.
 
-The nodes represent conditions (diamonds) and motifs (squares)
+The nodes represent conditions (diamonds) and motifs (squares).
 The edges connect a motif to a condition if that motif is among the
 top `k` motifs in that condition for that regression model. 
 Edges are colored proportionally to their Importance value.
 
-The graph is rendered interactively using `Plotly`. 
+The graph is rendered interactively using `plotly`. 
 Here we chose PLS as example.
 
 ```{r, plot_digraph, fig.width=7, fig.height=7}
@@ -456,7 +456,7 @@ plot_digraph(motif_names = colnames(S), edges_sublist = dfs["PLS"])
 ### plot_clustermap
 
 In order to visualize motifs exhibiting similar patterns across conditions 
-(and most similar conditions aswell), the user can use this function to build a clustermap.
+(and most similar conditions as well), the user can use this function to build a clustermap.
 The function takes as input a sublist coming from `models2dataframe`.
 Clustering methods and metrics can also be specified for both rows and columns.
 
@@ -475,7 +475,7 @@ The strength of MotifRegressR lies in the number of regression types that can be
 That is why `consensus_motifs` function has been implemented. 
 
 The function takes as input the output of `models2dataframe` and builds 
-a consenus of motifs to explore the conservation of motifs across
+a consensus of motifs to explore the conservation of motifs across
 different regression types `by_regressor = TRUE` or across conditions `by_regressor = FALSE`.
 
 - In the first case (`by_regressor = TRUE`) we are looking 
@@ -493,10 +493,10 @@ consensus <- consensus_motifs(df_list = dfs, by_regressor = TRUE)
 ### consensus_motifs_heatmap
 
 The user can then visualize results in the form of a heatmap:
-The heatmap will show the conservation of motifs across conditions
+the heatmap will show the conservation of motifs across conditions
 or regression types, according to `by_regressor` parameter.
 
-In this case we are looking at motifs conservation across regression types
+In this case we are looking at motifs conservation across regression types.
 Darker cells will represent motifs that appear among the top `k` motifs in that
 condition.
 
