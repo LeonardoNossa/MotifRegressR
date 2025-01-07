@@ -34,7 +34,7 @@ sense-making step of the analyses.
 
 ## How to Use This Repository
 
-Instructions on how to install and use the tool are provided in the [Vignette.html](Vignettes/MotifRegressR.html) file in the [doc](Vignettes) folder.
+Instructions on how to install and use the tool are provided in the [Vignette.html](Vignettes/MotifRegressR.Rmd) file in the [doc](Vignettes) folder.
 You can find all the functions' scripts in the [R](R) folder and all the documentation about them in the [man](man) folder. 
 Please make sure R software and all depdendencies are correctly installed before installing the package.
 
