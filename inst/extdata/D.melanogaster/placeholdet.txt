@@ -1,1 +1,5 @@
-ciao
+Files for D.melanogaster were too big to be uploaded on GitHub
+In this folder you should have been able to find:
+
+- FASTA file for D.melanogaster
+- GFF file for D.melanogaster
