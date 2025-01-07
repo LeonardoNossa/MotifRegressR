@@ -73,7 +73,7 @@ or by specifying a taxon ID to retrieve motifs from JASPAR database.
 In the following example we are loading the first ten motifs from the local file `SwissRegulon_e_coli.meme` in the `extdata` directory. In order to speed up downstream steps, we will only take the first ten PFMs.
 
 ```{r PFM_loader}
-path_PFM <- system.file("extdata", "SwissRegulon_e_coli.meme", package = "MotifRegressR")
+path_PFM <- system.file("extdata/E.coli", "SwissRegulon_e_coli.meme", package = "MotifRegressR")
 PFMs <- PFM_loader(path = path_PFM, tax_id = NULL)
 PFMs_10 <- PFMs[1:10]
 ```
@@ -103,7 +103,7 @@ By using this function the user can retrieve the nucleotide frequencies of an or
 starting from its genomic sequence, provided in FASTA format.
 
 ```{r, retrieve_frequencies}
-path_fasta <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
 background <- retrieve_frequencies(fasta = path_fasta)
 ```
 
@@ -135,8 +135,8 @@ Given that we are working with E. coli, we set the `species` parameter to "Bacte
 The `upstream` value is set to 300bp by default, but can be specified by the user.
 
 ```{r, get_sequences}
-path_gff <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.gff", package = "MotifRegressR")
-path_fasta <- system.file("extdata", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+path_gff <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.gff", package = "MotifRegressR")
+path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
 
 dataSeq <- get_sequences(gff = path_gff, fasta = path_fasta, species = "Bacteria")
 dataSeq_500 <- dataSeq[1:500,]
@@ -150,6 +150,7 @@ seq <- row["Sequence"]
 print(paste0("Chr: ",chr))
 print(paste0("Sequence: ", substr(seq,1,25)[[1]], "..." ,substr(seq,nchar(seq)-25,nchar(seq))[[1]]))
 ```
+
 The function returns a matrix of size N x 2, where N is the number of genes.
 
 - The first column "Chr" contains the chromosome ID to which the sequence belongs
@@ -189,6 +190,7 @@ print(paste0("Scores for gene ",row_name,": "))
 cat("\n")
 print(row_values)
 ```
+
 The function returns a matrix of size N x M, where N is the number of genes 
 (one upstream sequence for each gene) and M is the number of motifs.
 
@@ -205,7 +207,7 @@ frame. It uses `read.table()` to read the file, assuming a comma-separated
 values (CSV) format.
 
 ```{r, compendium_loader}
-path_compendium <- system.file("extdata", "compendium.csv", package = "MotifRegressR")
+path_compendium <- system.file("extdata/E.coli", "compendium.csv", package = "MotifRegressR")
 compendium <- compendium_loader(path = path_compendium, sep = ",", header = TRUE, row.names = 1)
 compendium_500 <- compendium[1:500, 1:10]
 ```
@@ -314,8 +316,8 @@ the first gene of each of the operons
 of gene ID to gene name.
 
 ```{r, table_first_genes}
-path_TSV <- system.file("extdata", "TUSet.tsv", package = "MotifRegressR")
-path_PRO <- system.file("extdata", "511145_protein_info_v12_0.txt", package = "MotifRegressR")
+path_TSV <- system.file("extdata/E.coli", "TUSet.tsv", package = "MotifRegressR")
+path_PRO <- system.file("extdata/E.coli", "511145_protein_info_v12_0.txt", package = "MotifRegressR")
 
 first_genes <- table_first_genes(tsv = path_TSV, pro = path_PRO)
 ```
