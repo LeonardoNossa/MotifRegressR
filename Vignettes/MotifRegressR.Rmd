@@ -20,8 +20,6 @@ Follow these commands to correctly install the package:
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
-library(devtools)
-
 devtools::install_github("https://github.com/LeonardoNossa/MotifRegressR")
 ```
 
@@ -45,7 +43,7 @@ Users can import PFMs from JASPAR, using the taxon ID of that species or custom 
 Users can also upload gene expression compendia containing gene expression levels across different conditions. 
 If the IDs associated to each condition allow it, metadata can be retrieved from ENA browser to obtain more information regarding the samples. 
 
-MotifRegressR then performs regression analysis and determines the most impactful motifs for the different tested conditions. Downstream steps, mainly represented by visualization functions finally help the user in the sense-making steps of the analyses.
+MotifRegressR then performs regression analyses and determines the most impactful motifs for the different tested conditions. Downstream steps, mainly represented by visualization functions finally help the user in the sense-making steps of the analyses.
 
 Below you find a visual representation of the project pipeline. 
 If you are part of the University of Milan, you can view it 
@@ -58,7 +56,8 @@ by clicking the following link and entering your credentials.
 Here below you can find the commands of the pipeline with examples and explanations of the different functions. 
 In the examples, we will use smaller portions of the typical data you would provide. 
 This is done to speed up processing and give an overall idea on how the package works. 
-All of the results you will see below are done using E.coli data
+All of the results you will see below are done using E.coli data.
+In order to ensure reproducibility, we first set the seed.
 
 ```{r set.seed}
 set.seed(123)
@@ -70,10 +69,12 @@ The first step is to upload the Position Frequency Matrices (PFMs) with
 the specific function. You can load PFMs either from a local file in MEME format 
 or by specifying a taxon ID to retrieve motifs from JASPAR database.
 
-In the following example we are loading the first ten motifs from the local file `SwissRegulon_e_coli.meme` in the `extdata` directory. In order to speed up downstream steps, we will only take the first ten PFMs.
+In the following example we are loading the first ten motifs from the local file `SwissRegulon_e_coli.meme` in the `extdata` directory. 
 
 ```{r PFM_loader}
-path_PFM <- system.file("extdata/E.coli", "SwissRegulon_e_coli.meme", package = "MotifRegressR")
+path_PFM <- system.file("extdata/E.coli", "SwissRegulon_e_coli.meme", 
+                        package = "MotifRegressR")
+
 PFMs <- PFM_loader(path = path_PFM, tax_id = NULL)
 PFMs_10 <- PFMs[1:10]
 ```
@@ -103,7 +104,9 @@ By using this function the user can retrieve the nucleotide frequencies of an or
 starting from its genomic sequence, provided in FASTA format.
 
 ```{r, retrieve_frequencies}
-path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", 
+                          package = "MotifRegressR")
+
 background <- retrieve_frequencies(fasta = path_fasta)
 ```
 
@@ -135,10 +138,15 @@ Given that we are working with E. coli, we set the `species` parameter to "Bacte
 The `upstream` value is set to 300bp by default, but can be specified by the user.
 
 ```{r, get_sequences}
-path_gff <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.gff", package = "MotifRegressR")
-path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", package = "MotifRegressR")
+path_gff <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.gff", 
+                        package = "MotifRegressR")
 
-dataSeq <- get_sequences(gff = path_gff, fasta = path_fasta, species = "Bacteria")
+path_fasta <- system.file("extdata/E.coli", "GCF_000005845.2_ASM584v2_genomic.fna", 
+                          package = "MotifRegressR")
+
+dataSeq <- get_sequences(gff = path_gff, fasta = path_fasta, 
+                         species = "Bacteria", upstream = 300)
+
 dataSeq_500 <- dataSeq[1:500,]
 ```
 
@@ -207,7 +215,9 @@ frame. It uses `read.table()` to read the file, assuming a comma-separated
 values (CSV) format.
 
 ```{r, compendium_loader}
-path_compendium <- system.file("extdata/E.coli", "compendium.csv", package = "MotifRegressR")
+path_compendium <- system.file("extdata/E.coli", "compendium.csv", 
+                               package = "MotifRegressR")
+
 compendium <- compendium_loader(path = path_compendium, sep = ",", header = TRUE, row.names = 1)
 compendium_500 <- compendium[1:500, 1:10]
 ```
@@ -316,8 +326,11 @@ the first gene of each of the operons
 of gene ID to gene name.
 
 ```{r, table_first_genes}
-path_TSV <- system.file("extdata/E.coli", "TUSet.tsv", package = "MotifRegressR")
-path_PRO <- system.file("extdata/E.coli", "511145_protein_info_v12_0.txt", package = "MotifRegressR")
+path_TSV <- system.file("extdata/E.coli", "TUSet.tsv", 
+                        package = "MotifRegressR")
+
+path_PRO <- system.file("extdata/E.coli", "511145_protein_info_v12_0.txt", 
+                        package = "MotifRegressR")
 
 first_genes <- table_first_genes(tsv = path_TSV, pro = path_PRO)
 ```
@@ -424,7 +437,7 @@ If the extraction of the motifs require a filtering step
 (significance of beta coefficients for "LM") , this is automatically taken care of.
 
 ```{r, models2dataframe}
-dfs <- models2dataframe(regression_list = models, alpha = 0.05)
+dfs <- models2dataframe(regression_list = models, k = 5, alpha = 0.05)
 ```
 
 The output of the function will be a named list of data frames, each of them
@@ -518,16 +531,23 @@ The function has been thought to assess association between motifs and condition
 (which is a list, with one element per regression type).
 
 
-```{r, consensus_fisher_test}
+```{r, consensus_fisher_test, eval = FALSE}
 consensus_fisher_test(consensus = consensus,
                       num_of_regressions = length(dfs),
                       alpha = 0.05)
 ```
 
-The results here appears to be non-significant, likely for the reduced number of 
+```{r, consensus_fisher_test 2, echo = FALSE}
+consensus_fisher_test(consensus = consensus,
+                      num_of_regressions = length(dfs),
+                      alpha = 0.05)
+```
+
+The results here appear to be non-significant, likely for the reduced number of 
 motifs, genes and conditions we chose for the analysis.
 
 ## Web interface app
 
-A shiny Web application has also been implemented to allow people not familiar with R
-to use MotifRegressR functionalities. In order to use it, run the `app.R` script and read the tutorial!
+A shiny Web application has also been implemented to allow people 
+who are not familiar with R to use MotifRegressR functionalities. 
+In order to use it, run the `app.R` script and read the tutorial!
