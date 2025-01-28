@@ -1,2 +1,5 @@
 ^MotifRegressR\.Rproj$
 ^\.Rproj\.user$
+^.*/MTF_app/$
+
+
