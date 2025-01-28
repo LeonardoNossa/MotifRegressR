@@ -1,7 +1,8 @@
 # Advanced genomics project: MotifRegressR
 
-(aggiungere logo)
-
+<div align="center">
+  <img src="logo.jpg" width="200">
+</div>div>
 This project was developed as part of the Advanced genomics course within the Master's degree in 
 Bioinformatics for Computational Genomics. It consists in an R package and a dedicated shinyR application
 for motif regression.
